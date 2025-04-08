@@ -1,0 +1,35 @@
+ {/* Charts */}
+                  <div className="w-full p-4">
+                    <Typography variant="h5" className="block font-bold">
+                      Analytics Overview
+                    </Typography>
+                    <div className="flex flex-wrap">
+                      <div className="flex-[0_0_75%] px-2">
+                        {/* Multiple chart */}
+                        <MultiBarChart
+                          totalRecievedAmount={totalRecievedAmount}
+                          pendingAmount={pendingAmount}
+                        />
+                      </div>
+                      <div className="flex-[0_0_25%] px-2">
+                        {/* Pie chart */}
+                        <PieChartWithCustomizedLabel
+                          totalRevenue={totalRevenue}
+                          totalRecievedAmount={totalRecievedAmount}
+                          pendingAmount={pendingAmount}
+                          clients={clients}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap mt-4">
+                      <div className="flex-[0_0_100%] px-2">
+                        {/* Profit & Loss */}
+                        <ProfitLossChart
+                          totalRevenue={totalRevenue}
+                          totalRecievedAmount={totalRecievedAmount}
+                          pendingAmount={pendingAmount}
+                          clients={clients}
+                        />
+                      </div>
+                    </div>
+                  </div>
