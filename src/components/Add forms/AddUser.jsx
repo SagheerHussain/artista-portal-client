@@ -113,7 +113,7 @@ const AddUser = ({ setSelectedPage }) => {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          {/* <Grid item xs={12} md={6}>
             <TextField
               type="file"
               fullWidth
@@ -122,7 +122,7 @@ const AddUser = ({ setSelectedPage }) => {
               onChange={handleFileChange}
               sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <Box

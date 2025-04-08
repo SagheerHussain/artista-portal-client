@@ -279,7 +279,7 @@ export default function Dashboard() {
                   {/* Dashboard Live Currency Exhange Rates Cards */}
                   {user?.role === "admin" && (
                     <Grid container spacing={3}>
-                      <Grid item xs={12} sm={6} lg={3}>
+                      <Grid item xs={6} sm={6} lg={3}>
                         <DashboardCard
                           sx={{ width: "100%", marginRight: "1.5rem" }}
                         >
@@ -333,7 +333,7 @@ export default function Dashboard() {
                           </CardContent>
                         </DashboardCard>
                       </Grid>
-                      <Grid item xs={12} sm={6} lg={3}>
+                      <Grid item xs={6} sm={6} lg={3}>
                         <DashboardCard
                           sx={{ width: "100%", marginRight: "1.5rem" }}
                         >
@@ -423,7 +423,7 @@ export default function Dashboard() {
                         </DashboardCard>
                       </Grid>
 
-                      <Grid item xs={12} sm={6} lg={3}>
+                      <Grid item xs={6} sm={6} lg={3}>
                         <DashboardCard
                           sx={{ width: "100%", marginRight: "1.5rem" }}
                         >
@@ -517,7 +517,7 @@ export default function Dashboard() {
                           </CardContent>
                         </DashboardCard>
                       </Grid>
-                      <Grid item xs={12} sm={6} lg={3}>
+                      <Grid item xs={6} sm={6} lg={3}>
                         <DashboardCard sx={{ width: "100%" }}>
                           <IconButton color="secondary">
                             <svg
@@ -563,7 +563,7 @@ export default function Dashboard() {
                   {/* Total Amount Generated */}
                   <Grid container spacing={3}>
                     {user?.role === "admin" && (
-                      <Grid item xs={12} sm={6} lg={3}>
+                      <Grid item xs={6} sm={6} lg={3}>
                         <DashboardCard>
                           <IconButton color="primary">
                             <MonetizationOn fontSize="large" />
@@ -580,7 +580,7 @@ export default function Dashboard() {
 
                     <Grid
                       item
-                      xs={12}
+                      xs={6}
                       sm={6}
                       lg={user?.role === "admin" ? 3 : 4}
                     >
@@ -599,7 +599,7 @@ export default function Dashboard() {
 
                     <Grid
                       item
-                      xs={12}
+                      xs={6}
                       sm={6}
                       lg={user?.role === "admin" ? 3 : 4}
                     >
@@ -618,7 +618,7 @@ export default function Dashboard() {
 
                     <Grid
                       item
-                      xs={12}
+                      xs={6}
                       sm={6}
                       lg={user?.role === "admin" ? 3 : 4}
                     >
