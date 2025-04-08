@@ -45,7 +45,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExpenseCategoryTable from "../../pages/expense category/ExpenseCategoryTable";
 import ExpenseCategoryForm from "../../components/Add forms/ExpenseCategoryForm";
-import PaymentMethodTable from "../payment methods/paymentMethodTable";
+import PaymentMethodTable from "../payment methods/PaymentMethodTable";
 import AddPaymentMethodForm from "../../components/Add forms/AddPaymentMethodForm";
 import AddUser from "../../components/Add forms/AddUser";
 // import PieChartWithCustomizedLabel from "@components/Charts/PieChartWithCustomizedLabel";
