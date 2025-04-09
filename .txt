@@ -1,0 +1,29 @@
+
+3. CRUD Opearation of Payment Methods
+5. Design Login / Register
+
+
+
+
+BUGS
+1. In Edit Salary Current Sales Amount fetch on second time
+
+<form onSubmit={handleSubmit}>
+          
+
+          <Box
+            mt={2}
+            sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}
+          >
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCancelPopup}
+            >
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              Save Changes
+            </Button>
+          </Box>
+        </form>

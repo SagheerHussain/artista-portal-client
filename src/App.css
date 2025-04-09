@@ -1,0 +1,59 @@
+div[aria-label="Light mode"] {
+  display: none !important;
+}
+header .MuiTypography-root.MuiTypography-h6 {
+  display: none !important;
+}
+
+/* Min Height Of Table Row */
+.MuiDataGrid-virtualScroller.MuiDataGrid-virtualScroller--hasScrollX,
+.MuiDataGrid-virtualScrollerContent {
+  min-height: 250px !important;
+}
+.MuiDataGrid-row {
+  background: #222 !important;
+}
+
+@media (max-width: 1280px) {
+  .auth_form {
+    max-width: 500px !important;
+  }
+  .auth_user_form {
+    min-width: 350px !important;
+  }
+  .auth_children {
+    width: 45%;
+    display: flex;
+    justify-content: center;
+  }
+}
+@media (max-width: 1024px) {
+  .auth_form {
+    max-width: 100% !important;
+    margin: auto;
+  }
+  .auth_layout {
+    display: flex;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 3rem 0;
+  }
+  .auth_children {
+    width: 70vw;
+    margin: auto;
+  }
+  .auth_layout .auth_image {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  .auth_children {
+    width: 100vw;
+  }
+  .verification_email_form {
+    min-width: 100% !important;
+  }
+  .auth_user_form {
+    min-width: 100% !important;
+  }
+}
