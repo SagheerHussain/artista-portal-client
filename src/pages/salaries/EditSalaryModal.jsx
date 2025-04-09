@@ -11,40 +11,47 @@ import {
 import { getSalaryById, updateSalary } from "../../../services/salary";
 import Swal from "sweetalert2";
 import { getEmployeeCurrentSalesAmount } from "../../../services/sales";
+import { ClipLoader } from "react-spinners";
 
 const EditSalaryModal = ({
   open,
   onClose,
   selectedSalary,
   refetchSalaries,
-  selectedEmployee
+  selectedEmployee,
 }) => {
-  // Token
   const token = JSON.parse(localStorage.getItem("token"));
 
-  // State Variables
+  const [loading, setLoading] = useState(false);
+  const [modalLoading, setModalLoading] = useState(true);
   const [salaryData, setSalaryData] = useState({});
   const [commission, setCommission] = useState("");
   const [totalMonthlySales, setTotalMonthlySales] = useState(0);
 
-  // Get Current Sales
-  const getCurrentSalesAmount = async () => {
+  // Load data only when modal is open
+  useEffect(() => {
+    if (open && selectedSalary && selectedEmployee) {
+      loadData();
+    }
+  }, [open, selectedSalary, selectedEmployee]);
+
+  // Load both salary and sales data
+  const loadData = async () => {
+    setModalLoading(true);
+
     try {
-      const { totalMonthlySales } = await getEmployeeCurrentSalesAmount(
+      const salesRes = await getEmployeeCurrentSalesAmount(
         selectedEmployee,
         token
       );
-      setTotalMonthlySales(totalMonthlySales);
-    } catch (error) {
-      console.error("Error fetching current sales amount:", error);
-    }
-  };
+      const salaryRes = await getSalaryById(selectedSalary, token);
 
-  // Get Salary Data and Calculate Commission
-  const fetchSalaryRecord = async () => {
-    try {
-      const { success, salary } = await getSalaryById(selectedSalary, token);
-      if (success) {
+      if (salesRes?.totalMonthlySales && salaryRes?.salary) {
+        const sales = salesRes.totalMonthlySales;
+        const salary = salaryRes.salary;
+
+        setTotalMonthlySales(sales);
+
         setSalaryData({
           employee: salary.employee,
           bonus: salary.bonus,
@@ -56,39 +63,35 @@ const EditSalaryModal = ({
           status: salary.status,
         });
 
-        // Calculate commission
-        const percentage = (salary.amount / (totalMonthlySales * 280)) * 100;
-        setCommission(percentage);
+        const commissionPercentage = (
+          (salary.amount / (sales * 280)) *
+          100
+        ).toFixed(2);
+
+        setCommission(commissionPercentage);
       }
     } catch (error) {
-      console.error("Error fetching salary by id:", error);
+      console.error("Error loading data:", error);
     }
+
+    setModalLoading(false);
   };
 
-  // Fetch data when modal opens
-  useEffect(() => {
-    fetchSalaryRecord();
-    getCurrentSalesAmount();
-  }, [selectedSalary]);
-
-  // Handle Input Changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSalaryData({ ...salaryData, [name]: value });
 
-    // If amount changes, re-calculate commission
-    if (name === "amount") {
-      const percentage = (value / totalSalesPKR) * 100;
-      setCommission(percentage.toFixed(2));
+    if (name === "bonus" || name === "commission") {
+      // trigger total recalc
+      setCommission((prev) => prev); // trigger re-render
     }
   };
 
   const handleSubmit = async () => {
-    // You can customize this
+    setLoading(true);
     const totalAmount = calculateTotalSalary();
-    const amount = calculateCommisioninPKR();
+    const amount = calculateCommissionInPKR();
 
-    // Updated Data
     const updatedData = {
       ...salaryData,
       employee: salaryData.employee._id,
@@ -107,166 +110,121 @@ const EditSalaryModal = ({
           icon: "success",
           title: "Salary Updated",
           text: message,
-          timer: 1500,
+          timer: 800,
         });
+        setLoading(false);
         refetchSalaries();
         onClose();
       }
     } catch (error) {
       console.error("Error updating salary:", error);
+      setLoading(false);
     }
   };
 
-  // Commision in PKR
-  const calculateCommisioninPKR = () => {
+  const calculateCommissionInPKR = () => {
     const commissionPercent = Number(commission) || 0;
-    const commissionInDollar = (totalMonthlySales * commissionPercent) / 100;
-    const commissionInPKR = commissionInDollar * 280;
-    return commissionInPKR.toFixed(0);
+    const commissionDollar = (totalMonthlySales * commissionPercent) / 100;
+    const commissionPKR = commissionDollar * 280;
+    return commissionPKR.toFixed(0);
   };
 
-  // Calculate Total Salary
   const calculateTotalSalary = () => {
-    const commissionPercent = Number(commission) || 0;
     const bonus = Number(salaryData.bonus) || 0;
-
-    const commissionInDollar = (totalMonthlySales * commissionPercent) / 100;
-    const commissionInPKR = commissionInDollar * 280;
-    const totalSalary = commissionInPKR + bonus;
-
-    return totalSalary.toFixed(0); // No decimal points
+    const commissionPKR = parseFloat(calculateCommissionInPKR()) || 0;
+    return (commissionPKR + bonus).toFixed(0);
   };
 
   return (
     <Dialog open={open} fullWidth maxWidth="sm">
       <DialogTitle>Edit Salary</DialogTitle>
-      {salaryData && (
-        <DialogContent>
-          <TextField
-            label="Employee"
-            name="employee"
-            fullWidth
-            margin="dense"
-            value={salaryData?.employee?.name || ""}
-          />
-          <TextField
-            label="Commission (%)"
-            name="commission"
-            type="number"
-            fullWidth
-            margin="dense"
-            value={commission}
-            onChange={(e) => setCommission(e.target.value)}
-          />
-          <TextField
-            label="Bonus (optional)"
-            name="bonus"
-            type="number"
-            fullWidth
-            margin="dense"
-            value={salaryData.bonus || 0}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Amount"
-            name="amount"
-            type="number"
-            fullWidth
-            margin="dense"
-            value={calculateCommisioninPKR() || ""}
-            disabled
-          />
-          <TextField
-            label="Dollar Rate"
-            name="dollarRate"
-            type="number"
-            fullWidth
-            margin="dense"
-            value={280}
-            disabled
-          />
-          <TextField
-            label="Total Amount"
-            name="totalAmount"
-            type="number"
-            fullWidth
-            margin="dense"
-            value={calculateTotalSalary() || ""}
-            disabled
-          />
-          <TextField
-            label="Paid Date"
-            name="paidDate"
-            type="date"
-            fullWidth
-            margin="dense"
-            value={salaryData.paidDate?.split("T")[0] || ""}
-            onChange={handleChange}
-          />
 
-          <TextField
-            select
-            fullWidth
-            label="Month"
-            margin="dense"
-            name="month"
-            value={salaryData?.month || ""}
-            onChange={handleChange}
-          >
-            {[
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ].map((month) => (
-              <MenuItem key={month} value={month}>
-                {month}
-              </MenuItem>
-            ))}
-          </TextField>
+      <DialogContent>
+        <TextField
+          label="Employee"
+          name="employee"
+          fullWidth
+          margin="dense"
+          value={salaryData?.employee?.name || ""}
+          disabled
+        />
+        <TextField
+          label="Commission (%)"
+          name="commission"
+          type="number"
+          fullWidth
+          margin="dense"
+          value={commission || ""}
+          onChange={(e) => setCommission(e.target.value)}
+        />
+        <TextField
+          label="Bonus (optional)"
+          name="bonus"
+          type="number"
+          fullWidth
+          margin="dense"
+          value={salaryData.bonus || ""}
+          onChange={handleChange}
+        />
+        <TextField
+          label="Amount"
+          name="amount"
+          type="number"
+          fullWidth
+          margin="dense"
+          value={calculateCommissionInPKR() || ""}
+          disabled
+        />
+        <TextField
+          label="Dollar Rate"
+          name="dollarRate"
+          type="number"
+          fullWidth
+          margin="dense"
+          value={280}
+          disabled
+        />
+        <TextField
+          label="Total Amount"
+          name="totalAmount"
+          type="number"
+          fullWidth
+          margin="dense"
+          value={calculateTotalSalary() || ""}
+          disabled
+        />
+        <TextField
+          label="Paid Date"
+          name="paidDate"
+          type="date"
+          fullWidth
+          margin="dense"
+          value={salaryData.paidDate?.split("T")[0] || ""}
+          onChange={handleChange}
+        />
+        <TextField
+          select
+          label="Status"
+          name="status"
+          fullWidth
+          margin="dense"
+          value={salaryData?.status || ""}
+          onChange={handleChange}
+        >
+          {["Paid", "Pending"].map((status) => (
+            <MenuItem key={status} value={status}>
+              {status}
+            </MenuItem>
+          ))}
+        </TextField>
+      </DialogContent>
 
-          <TextField
-            fullWidth
-            label="Year"
-            name="year"
-            type="number"
-            margin="dense"
-            value={salaryData.year || ""}
-            onChange={handleChange}
-            required
-          />
-
-          <TextField
-            select
-            label="Status"
-            name="status"
-            fullWidth
-            margin="dense"
-            value={salaryData?.status || ""}
-            onChange={handleChange}
-          >
-            {["Paid", "Pending"].map((status) => (
-              <MenuItem key={status} value={status}>
-                {status}
-              </MenuItem>
-            ))}
-          </TextField>
-        </DialogContent>
-      )}
       <DialogActions>
         <Button onClick={onClose} color="secondary">
           Cancel
         </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
-          Save Changes
+          {loading ? <ClipLoader size={20} color="#fff" /> : "Save Changes"}
         </Button>
       </DialogActions>
     </Dialog>

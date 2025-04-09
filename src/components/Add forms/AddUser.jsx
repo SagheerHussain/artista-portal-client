@@ -36,8 +36,7 @@ const AddUser = ({ setSelectedPage }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await registerAccount(formData);
-
+      
       if (
         formData.name === "" ||
         formData.email === "" ||
@@ -52,6 +51,18 @@ const AddUser = ({ setSelectedPage }) => {
         return;
       }
 
+      if (formData.password.length < 8) {
+        Swal.fire({
+          icon: "error",
+          text: "Password must be at least 8 characters long",
+          timer: 1500,
+        });
+        setLoading(false);
+        return;
+      }
+
+      const response = await registerAccount(formData);
+      
       if (response.success) {
         setLoading(false);
         Swal.fire({

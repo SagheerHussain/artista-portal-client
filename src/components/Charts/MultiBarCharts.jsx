@@ -150,7 +150,7 @@ const MultiBarChart = () => {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip
-              formatter={(value) => [`${value} PKR`, "Amount"]}
+              formatter={(value) => [`${value.toLocaleString()} PKR`, "Amount"]}
               contentStyle={{
                 backgroundColor: "#1F2937",
                 borderRadius: "8px",

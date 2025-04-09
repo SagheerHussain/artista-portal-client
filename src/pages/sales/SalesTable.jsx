@@ -284,7 +284,7 @@ const SalesTable = ({ setSelectedPage }) => {
             <FaPencilAlt size={16} className="text-[#71717a]" />
           </IconButton>
 
-          {user?.role === "employee" && (
+          {user?.role === "admin" && (
             <IconButton onClick={() => handleDelete(params.row.id)}>
               <MdDelete size={18} className="text-[#bc134f]" />
             </IconButton>

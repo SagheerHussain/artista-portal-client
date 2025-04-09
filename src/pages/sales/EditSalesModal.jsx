@@ -4,9 +4,6 @@ import {
   MenuItem,
   Button,
   Grid,
-  Box,
-  Typography,
-  Modal,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -18,15 +15,9 @@ import {
   updateSale,
 } from "../../../services/sales";
 import Swal from "sweetalert2";
+import { ClipLoader } from "react-spinners";
 
-const EditSalesModal = ({
-  open,
-  saleId,
-  onClose,
-  initialData,
-  onSubmit,
-  refetchSales,
-}) => {
+const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
   const token = JSON.parse(localStorage.getItem("token"));
 
   const [formData, setFormData] = useState({
@@ -44,6 +35,7 @@ const EditSalesModal = ({
     leadDate: "",
   });
 
+  const [loading, setLoading] = useState(false);
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [previousReceived, setPreviousReceived] = useState(0);
 
@@ -59,7 +51,7 @@ const EditSalesModal = ({
 
   // Fetch Existing Sale Data
   const fetchSaleData = async () => {
-    if (!saleId) return;
+    if (!saleId || !open) return;
     try {
       const { sale } = await getSaleById(saleId, token);
 
@@ -69,7 +61,7 @@ const EditSalesModal = ({
         summary: sale.summary || "",
         totalAmount: sale.totalAmount || 0,
         upfrontAmount: sale.upfrontAmount || 0,
-        receivedAmount: 0, // Fresh input ke liye empty
+        receivedAmount: "", // fresh input field
         remainingAmount: sale.remainingAmount || 0,
         paymentMethod: sale.paymentMethod?._id || "",
         status: sale.status || "",
@@ -82,21 +74,42 @@ const EditSalesModal = ({
         user: sale.user || "",
       });
 
-      setPreviousReceived(Number(sale.receivedAmount || 0)); // Save previous received
+      setPreviousReceived(Number(sale.receivedAmount || 0));
     } catch (error) {
       console.error("Error fetching sale data:", error);
     }
   };
+
+  // Reset form data when modal closes
+  useEffect(() => {
+    if (!open) {
+      setFormData({
+        clientName: "",
+        projectTitle: "",
+        summary: "",
+        totalAmount: "",
+        upfrontAmount: "",
+        receivedAmount: "",
+        remainingAmount: "",
+        paymentMethod: "",
+        status: "",
+        month: "",
+        year: "",
+        leadDate: "",
+      });
+      setPreviousReceived(0);
+    }
+  }, [open]);
 
   useEffect(() => {
     fetchPaymentMethods();
   }, []);
 
   useEffect(() => {
-    if (saleId) {
+    if (open && saleId) {
       fetchSaleData();
     }
-  }, [saleId]);
+  }, [saleId, open]);
 
   // Handle Input Change
   const handleChange = (e) => {
@@ -129,12 +142,6 @@ const EditSalesModal = ({
     }));
   };
 
-  // Cancel Popup
-  const handleCancelPopup = () => {
-    onClose();
-  };
-
-  // Calculations
   const totalRecievedAmount =
     Number(formData.upfrontAmount) +
     previousReceived +
@@ -155,6 +162,7 @@ const EditSalesModal = ({
   // Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const finalReceivedAmount =
       previousReceived + Number(formData.receivedAmount);
@@ -186,26 +194,28 @@ const EditSalesModal = ({
           icon: "success",
           title: "Success",
           text: message,
-          timer: 1500,
+          timer: 800,
         });
         onClose();
         refetchSales();
+        setLoading(false);
       } else {
         Swal.fire({
           icon: "error",
           title: "Error",
           text: message,
         });
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error updating sale:", error);
+      setLoading(false);
     }
   };
 
   return (
     <Dialog open={open} fullWidth maxWidth="sm">
       <DialogTitle>Edit Sales</DialogTitle>
-
       <DialogContent>
         <Grid container spacing={2} className="py-4">
           <Grid item xs={12} md={6}>
@@ -216,7 +226,6 @@ const EditSalesModal = ({
               value={formData.clientName}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -228,11 +237,10 @@ const EditSalesModal = ({
               value={formData.projectTitle}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
-          <Grid item xs={12} md={12}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label="Summary"
@@ -240,7 +248,6 @@ const EditSalesModal = ({
               value={formData.summary}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -253,7 +260,6 @@ const EditSalesModal = ({
               value={formData.upfrontAmount}
               disabled
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -265,9 +271,8 @@ const EditSalesModal = ({
               type="number"
               value={formData.receivedAmount}
               onChange={handleChange}
-              disabled={remainingAmount === 0 ? true : false}
+              disabled={remainingAmount === 0}
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -279,7 +284,6 @@ const EditSalesModal = ({
               value={totalRecievedAmount}
               disabled
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -291,7 +295,6 @@ const EditSalesModal = ({
               value={remainingAmount}
               disabled
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -304,7 +307,6 @@ const EditSalesModal = ({
               value={formData.totalAmount}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -317,7 +319,6 @@ const EditSalesModal = ({
               value={formData.paymentMethod}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             >
               {paymentTypes?.map((option) => (
                 <MenuItem key={option._id} value={option._id}>
@@ -336,7 +337,6 @@ const EditSalesModal = ({
               value={formData.status}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             >
               {["Pending", "Partially Paid", "Fully Paid"].map((option) => (
                 <MenuItem key={option} value={option}>
@@ -354,7 +354,6 @@ const EditSalesModal = ({
               value={formData.month}
               disabled
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -366,7 +365,6 @@ const EditSalesModal = ({
               value={formData.year}
               disabled
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
 
@@ -375,11 +373,10 @@ const EditSalesModal = ({
               label="Lead Date"
               name="leadDate"
               type="date"
-              value={formData.leadDate?.split("T")[0]}
+              value={formData.leadDate?.split("T")[0] || ""}
               fullWidth
               disabled
               InputLabelProps={{ shrink: true }}
-              sx={{ borderRadius: 1 }}
             />
           </Grid>
         </Grid>
@@ -388,8 +385,13 @@ const EditSalesModal = ({
         <Button onClick={onClose} color="secondary">
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary" variant="contained">
-          Save Changes
+        <Button
+          onClick={handleSubmit}
+          color="primary"
+          variant="contained"
+          disabled={loading}
+        >
+          {loading ? <ClipLoader size={20} color="#fff" /> : "Edit Sale"}
         </Button>
       </DialogActions>
     </Dialog>

@@ -167,6 +167,7 @@ const ProfitLossChart = () => {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip
+            formatter={(value, name) => [`${value.toLocaleString()} PKR`, name]}
               contentStyle={{
                 backgroundColor: "#1F2937",
                 borderRadius: "8px",
