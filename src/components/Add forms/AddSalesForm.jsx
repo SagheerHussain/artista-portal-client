@@ -10,6 +10,8 @@ import {
 import { createSale, getPaymentMethods } from "../../../services/sales";
 import Swal from "sweetalert2";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
 
 const AddSalesForm = ({ setSelectedPage }) => {
   // Get User & Token
@@ -29,6 +31,8 @@ const AddSalesForm = ({ setSelectedPage }) => {
   });
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   // Fetch Payment Methods
   const fetchPaymentMethods = async () => {
@@ -85,12 +89,13 @@ const AddSalesForm = ({ setSelectedPage }) => {
           icon: "success",
           title: "Success",
           text: message,
-          timer: 1500,
+          timer: 800,
         });
         setLoading(false);
         setTimeout(() => {
           setSelectedPage("/reports/sales");
-        }, 2000);
+          dispatch(fetchAnalytics({ user, token }));
+        }, 1200);
       } else {
         Swal.fire({
           icon: "error",

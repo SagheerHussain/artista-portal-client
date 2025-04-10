@@ -14,6 +14,7 @@ import { createSalary } from "../../../services/salary";
 import Swal from "sweetalert2";
 import { getEmployeeCurrentSalesAmount } from "../../../services/sales";
 import currencyRates from "../../hooks/currencyRates";
+import { ClipLoader } from "react-spinners";
 
 const AddSalaryForm = ({ setSelectedPage }) => {
   const token = JSON.parse(localStorage.getItem("token"));
@@ -23,7 +24,6 @@ const AddSalaryForm = ({ setSelectedPage }) => {
     employee: "",
     amount: 0, // Commission %
     bonus: 0,
-    year: 2025,
     status: "",
     paidDate: "",
   });
@@ -31,6 +31,7 @@ const AddSalaryForm = ({ setSelectedPage }) => {
   // Exchange Rates
   const rates = currencyRates();
 
+  const [loading, setLoading] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [totalMonthlySales, setTotalMonthlySales] = useState(0);
   const [textDeduction, setTextDeduction] = useState(0);
@@ -87,16 +88,16 @@ const AddSalaryForm = ({ setSelectedPage }) => {
   // Handle Form Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const { commission, totalSalary } = calculateTotalSalary();
 
       const data = {
         ...formData,
         totalAmount: totalSalary, // Deducted total salary
-        amount: commission,       // Deducted commission
+        amount: commission, // Deducted commission
         admin: user._id,
       };
-
 
       const { success, message } = await createSalary(token, data);
       if (success) {
@@ -104,17 +105,19 @@ const AddSalaryForm = ({ setSelectedPage }) => {
           icon: "success",
           title: "Success",
           text: message,
-          timer: 1500,
+          timer: 800,
         });
         setTimeout(() => {
           setSelectedPage("/reports/salaries");
-        }, 2000);
+        }, 1200);
+        setLoading(false);
       } else {
         Swal.fire({
           icon: "error",
           title: "Error",
           text: message,
         });
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error creating salary:", error);
@@ -123,7 +126,10 @@ const AddSalaryForm = ({ setSelectedPage }) => {
 
   // Get Current Sales Amount
   const getCurrentSalesAmount = async (value) => {
-    const { totalMonthlySales } = await getEmployeeCurrentSalesAmount(value, token);
+    const { totalMonthlySales } = await getEmployeeCurrentSalesAmount(
+      value,
+      token
+    );
     setTotalMonthlySales(totalMonthlySales);
   };
 
@@ -217,7 +223,7 @@ const AddSalaryForm = ({ setSelectedPage }) => {
               label="Total Amount in PKR"
               name="totalAmount"
               type="number"
-              value={calculateTotalSalary().totalSalary}
+              value={calculateTotalSalary().totalSalary.toLocaleString()}
               disabled
               sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
             />
@@ -255,19 +261,6 @@ const AddSalaryForm = ({ setSelectedPage }) => {
               sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
             />
           </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Year"
-              name="year"
-              type="number"
-              value={formData.year}
-              onChange={handleChange}
-              required
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
-            />
-          </Grid>
         </Grid>
 
         <Box
@@ -281,8 +274,13 @@ const AddSalaryForm = ({ setSelectedPage }) => {
           >
             Cancel
           </Button>
-          <Button variant="contained" color="primary" type="submit">
-            Submit
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? <ClipLoader size={20} color="#fff" /> : "Add Salary"}
           </Button>
         </Box>
       </form>

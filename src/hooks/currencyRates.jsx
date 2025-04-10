@@ -12,7 +12,8 @@ const currencyRates = () => {
   useEffect(() => {
     const fetchDollarRate = async () => {
       try {
-        const response = await fetch("https://v6.exchangerate-api.com/v6/9f8daea350a3e0335db1697e/latest/PKR");
+        const response = await fetch("");
+        // https://v6.exchangerate-api.com/v6/9f8daea350a3e0335db1697e/latest/PKR
         
         const data = await response.json();
 
