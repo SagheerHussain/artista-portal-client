@@ -16,6 +16,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import CategoryIcon from "@mui/icons-material/Category";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
@@ -26,30 +27,22 @@ import SalesTable from "../../pages/sales/SalesTable";
 import ExpenseTable from "../../pages/expenses/ExpenseTable";
 import SalariesTable from "../../pages/salaries/SalariesTable";
 import AddSalaryForm from "@components/Add forms/AddSalaryForm";
-import {
-  getRevenue,
-  getTotalRecievedAmount,
-  getPendingAmount,
-  getClients,
-  getRecievedAmountByEmployee,
-  getPendingAmountByEmployee,
-  getClientsByEmployee,
-} from "../../../services/analyticsService";
 import currencyRates from "../../hooks/currencyRates";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import { MonetizationOn } from "@mui/icons-material";
 import MultiBarCharts from "@components/Charts/MultiBarCharts";
-// import PieChart from "@components/Charts/PieChart";
 import ProfitLossChart from "@components/Charts/ProfitLossChart";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import ExpenseCategoryTable from "../../pages/expense category/ExpenseCategoryTable";
 import ExpenseCategoryForm from "../../components/Add forms/ExpenseCategoryForm";
 import PaymentMethodTable from "../payment methods/PaymentMethodTable";
 import AddPaymentMethodForm from "../../components/Add forms/AddPaymentMethodForm";
 import AddUser from "../../components/Add forms/AddUser";
-// import PieChartWithCustomizedLabel from "@components/Charts/PieChartWithCustomizedLabel";
-// import { ProfileMenu } from "../../components";
+import TaxTable from "../tax/TaxTable";
+import AddTaxForm from "../../components/Add forms/AddTaxForm";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
 
 const darkTheme = createTheme({
   palette: {
@@ -146,6 +139,14 @@ export default function Dashboard() {
       ? { segment: "users", title: "Users", icon: <PeopleAltIcon /> }
       : null,
 
+    user?.role === "admin"
+      ? {
+          segment: "tax",
+          title: "Tax Deduction",
+          icon: <AssuredWorkloadIcon />,
+        }
+      : null,
+
     { kind: "divider" },
     { kind: "header", title: "Analytics" },
     {
@@ -185,11 +186,18 @@ export default function Dashboard() {
   // Get Token From Storage
   const token = JSON.parse(localStorage.getItem("token"));
 
-  // State Variabels
-  const [totalRevenue, setTotalRevenue] = useState(0);
-  const [totalRecievedAmount, setTotalRecievedAmount] = useState(0);
-  const [pendingAmount, setPendingAmount] = useState(0);
-  const [clients, setClients] = useState(0);
+  const location = useLocation();
+
+  // dispatch
+  const dispatch = useDispatch();
+
+  // Analytics
+  const { totalRevenue, totalRecievedAmount, pendingAmount, clients, tax } =
+    useSelector((state) => state.analytics);
+
+  useEffect(() => {
+    dispatch(fetchAnalytics({ user, token }));
+  }, [dispatch, location.pathname]);
 
   const router = useDemoRouter("/dashboard");
   const [selectedPage, setSelectedPage] = React.useState("dashboard");
@@ -197,36 +205,6 @@ export default function Dashboard() {
   React.useEffect(() => {
     setSelectedPage(router.pathname);
   }, [router.pathname]);
-  
-  // Analytics
-  const fetchAnalytics = async () => {
-    try {
-      const revenue = await getRevenue(token);
-      const recievedAmount =
-        user?.role === "admin"
-          ? await getTotalRecievedAmount(token)
-          : await getRecievedAmountByEmployee(user._id, token);
-      const pendingAmount =
-        user?.role === "admin"
-          ? await getPendingAmount(token)
-          : await getPendingAmountByEmployee(user._id, token);
-      const clients =
-        user?.role === "admin"
-          ? await getClients(token)
-          : await getClientsByEmployee(user._id, token);
-      // const expance = await getTotalExpance(token);
-      setTotalRevenue(revenue.totalAmount);
-      setTotalRecievedAmount(recievedAmount.totalReceivedAmount);
-      setPendingAmount(pendingAmount.totalAmount);
-      setClients(clients.totalClients);
-    } catch (error) {
-      console.error("Error fetching analytics:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -252,6 +230,8 @@ export default function Dashboard() {
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               {selectedPage === "/users" ? (
                 <UsersTable setSelectedPage={setSelectedPage} />
+              ) : selectedPage === "/tax" ? (
+                <TaxTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/reports/sales" ? (
                 <SalesTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/reports/expenses" ? (
@@ -274,6 +254,8 @@ export default function Dashboard() {
                 <SalariesTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/addSalary" ? (
                 <AddSalaryForm setSelectedPage={setSelectedPage} />
+              ) : selectedPage === "/addTax" ? (
+                <AddTaxForm setSelectedPage={setSelectedPage} />
               ) : (
                 <>
                   {/* Dashboard Live Currency Exhange Rates Cards */}
@@ -615,7 +597,6 @@ export default function Dashboard() {
                         </CardContent>
                       </DashboardCard>
                     </Grid>
-
                     <Grid
                       item
                       xs={6}
@@ -634,6 +615,37 @@ export default function Dashboard() {
                         </CardContent>
                       </DashboardCard>
                     </Grid>
+                    {user?.role === "admin" && (
+                      <>
+                        <Grid item xs={6} sm={6} lg={3}>
+                          <DashboardCard>
+                            <IconButton color="secondary">
+                              <AssuredWorkloadIcon fontSize="large" />
+                            </IconButton>
+                            <CardContent>
+                              <h6 className="2xl:text-base text-[.8rem]">
+                                Tax Deduction
+                              </h6>
+                              <h5 className="text-lg">{tax.data.overall.totalPercentage}</h5>
+                            </CardContent>
+                          </DashboardCard>
+                        </Grid>
+
+                        <Grid item xs={6} sm={6} lg={3}>
+                          <DashboardCard>
+                            <IconButton color="secondary">
+                              <MonetizationOn fontSize="large" />
+                            </IconButton>
+                            <CardContent>
+                              <h6 className="2xl:text-base text-[.8rem]">
+                                Net Profit
+                              </h6>
+                              <h5 className="text-lg">$140,000</h5>
+                            </CardContent>
+                          </DashboardCard>
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
 
                   {/* Charts */}

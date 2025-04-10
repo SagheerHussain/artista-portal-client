@@ -16,6 +16,8 @@ import {
 } from "../../../services/sales";
 import Swal from "sweetalert2";
 import { ClipLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
 
 const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
   const token = JSON.parse(localStorage.getItem("token"));
@@ -38,6 +40,8 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
   const [loading, setLoading] = useState(false);
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [previousReceived, setPreviousReceived] = useState(0);
+
+  const dispatch = useDispatch();
 
   // Fetch Payment Methods
   const fetchPaymentMethods = async () => {
@@ -206,6 +210,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           text: message,
         });
         setLoading(false);
+        dispatch(fetchAnalytics({ user, token }));
       }
     } catch (error) {
       console.error("Error updating sale:", error);

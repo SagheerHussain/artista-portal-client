@@ -26,6 +26,8 @@ import {
 import { getEmployees } from "../../../services/users";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
 
 const SalesTable = ({ setSelectedPage }) => {
   // Get User & Token
@@ -40,6 +42,8 @@ const SalesTable = ({ setSelectedPage }) => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [sales, setSales] = useState([]);
   const [employees, setEmployees] = useState([]);
+
+  const dispatch = useDispatch();
 
   // Filter States
   const [filters, setFilters] = useState({
@@ -190,6 +194,7 @@ const SalesTable = ({ setSelectedPage }) => {
             timer: 1500,
           });
           setRows(rows.filter((row) => row.id !== id));
+          dispatch(fetchAnalytics({ user, token }));
         }
       } catch (error) {
         console.error("Error deleting sale:", error);

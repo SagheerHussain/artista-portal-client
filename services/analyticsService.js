@@ -131,3 +131,19 @@ export const getYearlyExpenseData = async (token) => {
   );
   return response.data;
 };
+
+export const getTaxSummary = async (token) => {
+  try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/tax/analytics/summary`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+  } catch (error) {
+    console.error("Error fetching tax summary:", error);
+  }
+};
