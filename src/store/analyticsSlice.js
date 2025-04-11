@@ -28,11 +28,9 @@ export const fetchAnalytics = createAsyncThunk(
     const tax = await getTaxSummary(token);
     const netProfit = await getProfit(token);
 
-<<<<<<< HEAD
     console.log("Tax", tax)
 
-=======
->>>>>>> 4ec815a (Add Tax Deduction)
+
     return {
       totalRevenue: revenue.totalAmount,
       totalRecievedAmount: recievedAmount.totalReceivedAmount,

@@ -16,11 +16,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import CategoryIcon from "@mui/icons-material/Category";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-<<<<<<< HEAD
 import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
-=======
-import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
->>>>>>> 4ec815a (Add Tax Deduction)
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
@@ -46,15 +42,11 @@ import AddUser from "../../components/Add forms/AddUser";
 import TaxTable from "../tax/TaxTable";
 import AddTaxForm from "../../components/Add forms/AddTaxForm";
 import { useDispatch, useSelector } from "react-redux";
-<<<<<<< HEAD
 import CampaignIcon from "@mui/icons-material/Campaign";
 import { fetchAnalytics } from "../../store/analyticsSlice";
 import AnnouncementTable from "../announcements/AnnouncementTable";
 import AddAnnouncementForm from "../../components/Add forms/AddAnnouncementForm";
 import { getActiveAnnouncements } from "../../../services/announcement";
-=======
-import { fetchAnalytics } from "../../store/analyticsSlice";
->>>>>>> 4ec815a (Add Tax Deduction)
 
 const darkTheme = createTheme({
   palette: {
@@ -159,7 +151,6 @@ export default function Dashboard() {
         }
       : null,
 
-<<<<<<< HEAD
     user?.role === "admin"
       ? {
           segment: "announcement",
@@ -168,8 +159,6 @@ export default function Dashboard() {
         }
       : null,
 
-=======
->>>>>>> 4ec815a (Add Tax Deduction)
     { kind: "divider" },
     { kind: "header", title: "Analytics" },
     {
@@ -209,10 +198,6 @@ export default function Dashboard() {
   // Get Token From Storage
   const token = JSON.parse(localStorage.getItem("token"));
 
-<<<<<<< HEAD
-  // dispatch
-  const dispatch = useDispatch();
-=======
   const location = useLocation();
 
   // dispatch
@@ -225,18 +210,6 @@ export default function Dashboard() {
   useEffect(() => {
     dispatch(fetchAnalytics({ user, token }));
   }, [dispatch, location.pathname]);
->>>>>>> 4ec815a (Add Tax Deduction)
-
-  // Analytics
-  const {
-    totalRevenue,
-    totalRecievedAmount,
-    pendingAmount,
-    clients,
-    tax,
-    netProfit,
-  } = useSelector((state) => state.analytics);
-
   
   const router = useDemoRouter("/dashboard");
   const [selectedPage, setSelectedPage] = React.useState("dashboard");
@@ -249,10 +222,6 @@ export default function Dashboard() {
   React.useEffect(() => {
     setSelectedPage(router.pathname);
   }, [router.pathname]);
-
-<<<<<<< HEAD
-  const totalExpenses =
-    netProfit?.data?.totalExpenses?.USD + netProfit?.data?.totalSalaries?.USD;
 
   // Get Active Announcement
   useEffect(() => {
@@ -271,9 +240,6 @@ export default function Dashboard() {
       fetchActiveAnncouncements();
     }
   }, [user]);
-=======
-  const totalExpenses = netProfit?.data?.totalExpenses?.USD + netProfit?.data?.totalSalaries?.USD;
->>>>>>> 4ec815a (Add Tax Deduction)
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -301,11 +267,8 @@ export default function Dashboard() {
                 <UsersTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/tax" ? (
                 <TaxTable setSelectedPage={setSelectedPage} />
-<<<<<<< HEAD
               ) : selectedPage === "/announcement" ? (
                 <AnnouncementTable setSelectedPage={setSelectedPage} />
-=======
->>>>>>> 4ec815a (Add Tax Deduction)
               ) : selectedPage === "/reports/sales" ? (
                 <SalesTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/reports/expenses" ? (
@@ -330,11 +293,8 @@ export default function Dashboard() {
                 <AddSalaryForm setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/addTax" ? (
                 <AddTaxForm setSelectedPage={setSelectedPage} />
-<<<<<<< HEAD
               ) : selectedPage === "/addAnnouncement" ? (
                 <AddAnnouncementForm setSelectedPage={setSelectedPage} />
-=======
->>>>>>> 4ec815a (Add Tax Deduction)
               ) : (
                 <>
                   {/* Announcements */}
@@ -725,13 +685,7 @@ export default function Dashboard() {
                               <h6 className="2xl:text-base text-[.8rem]">
                                 Tax Deduction
                               </h6>
-<<<<<<< HEAD
-                              <h5 className="text-lg">
-                                {tax?.data?.overall?.averageTax || 0}
-                              </h5>
-=======
                               <h5 className="text-lg">{tax?.data?.overall?.averageTax}</h5>
->>>>>>> 4ec815a (Add Tax Deduction)
                             </CardContent>
                           </DashboardCard>
                         </Grid>
@@ -745,7 +699,7 @@ export default function Dashboard() {
                               <h6 className="2xl:text-base text-[.8rem]">
                                 Expenses
                               </h6>
-                              <h5 className="text-lg">${totalExpenses || 0}</h5>
+                              <h5 className="text-lg">${netProfit?.data?.totalExpenses?.USD || 0}</h5>
                             </CardContent>
                           </DashboardCard>
                         </Grid>
@@ -759,13 +713,9 @@ export default function Dashboard() {
                               <h6 className="2xl:text-base text-[.8rem]">
                                 Net Profit
                               </h6>
-<<<<<<< HEAD
                               <h5 className="text-lg">
                                 ${netProfit?.data?.netProfitUSD.toFixed(2) || 0}
                               </h5>
-=======
-                              <h5 className="text-lg">${netProfit?.data?.netProfitUSD.toFixed(2)}</h5>
->>>>>>> 4ec815a (Add Tax Deduction)
                             </CardContent>
                           </DashboardCard>
                         </Grid>

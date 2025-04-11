@@ -204,10 +204,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
         dispatch(fetchAnalytics({ user, token }));
         refetchSales();
         setLoading(false);
-<<<<<<< HEAD
-=======
         dispatch(fetchAnalytics({ user, token }));
->>>>>>> 4ec815a (Add Tax Deduction)
       } else {
         Swal.fire({
           icon: "error",
@@ -216,10 +213,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           timer: 1200,
         });
         setLoading(false);
-<<<<<<< HEAD
         dispatch(fetchAnalytics({ user, token }));
-=======
->>>>>>> 4ec815a (Add Tax Deduction)
       }
     } catch (error) {
       console.error("Error updating sale:", error);

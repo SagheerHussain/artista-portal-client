@@ -55,11 +55,7 @@ const AddUser = ({ setSelectedPage }) => {
         Swal.fire({
           icon: "error",
           text: "Password must be at least 8 characters long",
-<<<<<<< HEAD
           timer: 1000,
-=======
-          timer: 1500,
->>>>>>> 4ec815a (Add Tax Deduction)
         });
         setLoading(false);
         return;
