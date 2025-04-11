@@ -218,30 +218,19 @@ export default function Dashboard() {
 
   useEffect(() => {
     dispatch(fetchAnalytics({ user, token }));
-<<<<<<< HEAD
   }, [dispatch, location.pathname]);
-
-  
-  const router = useDemoRouter("/dashboard");
-  const [selectedPage, setSelectedPage] = React.useState("dashboard");
-  const [announcements, setAnnouncements] = useState([]);
 
   useEffect(() => {
     dispatch(fetchAnalytics({ user, token }));
-=======
->>>>>>> 4ca0f68 (Frontend Bugs Fixing)
   }, [dispatch, selectedPage]);
 
   React.useEffect(() => {
     setSelectedPage(router.pathname);
   }, [router.pathname]);
 
-<<<<<<< HEAD
-=======
   const totalExpenses =
     netProfit?.data?.totalExpenses?.USD + netProfit?.data?.totalSalaries?.USD;
 
->>>>>>> 4ca0f68 (Frontend Bugs Fixing)
   // Get Active Announcement
   useEffect(() => {
     async function fetchActiveAnncouncements() {
