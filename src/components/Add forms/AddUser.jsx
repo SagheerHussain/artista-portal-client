@@ -45,7 +45,7 @@ const AddUser = ({ setSelectedPage }) => {
         Swal.fire({
           icon: "error",
           text: "All Fields are required",
-          timer: 1500,
+          timer: 1000,
         });
         setLoading(false);
         return;
@@ -55,7 +55,7 @@ const AddUser = ({ setSelectedPage }) => {
         Swal.fire({
           icon: "error",
           text: "Password must be at least 8 characters long",
-          timer: 1500,
+          timer: 1000,
         });
         setLoading(false);
         return;

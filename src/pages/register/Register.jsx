@@ -46,7 +46,7 @@ const Register = () => {
         Swal.fire({
           icon: "error",
           text: "All Fields are required",
-          timer: 1500,
+          timer: 800,
         });
         setLoading(false);
         return;
@@ -57,17 +57,17 @@ const Register = () => {
         Swal.fire({
           icon: "success",
           text: "Successfully Register Account",
-          timer: 1500,
+          timer: 800,
         });
         setTimeout(() => {
           navigate("/");
-        }, 2500);
+        }, 1200);
       }
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "Failed to Register Account",
-        timer: 1500,
+        timer: 1200,
       });
       setLoading(false);
     }

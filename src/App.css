@@ -57,3 +57,13 @@ header .MuiTypography-root.MuiTypography-h6 {
     min-width: 100% !important;
   }
 }
+@media (max-width: 500px) {
+  .MuiCard-root {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .MuiCardContent-root {
+    text-align: center !important;
+    padding: 0 !important;
+  }
+}

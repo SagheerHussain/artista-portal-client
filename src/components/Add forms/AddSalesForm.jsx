@@ -153,7 +153,7 @@ const AddSalesForm = ({ setSelectedPage }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Upfront Amount"
+              label="Upfront Amount in $"
               name="upfrontAmount"
               type="number"
               value={formData.upfrontAmount}
@@ -165,7 +165,7 @@ const AddSalesForm = ({ setSelectedPage }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Total Amount"
+              label="Total Amount in $"
               name="totalAmount"
               type="number"
               value={formData.totalAmount}

@@ -50,18 +50,16 @@ const EditExpenseModal = ({ open, onClose, initialData, refetchSales }) => {
     try {
       const formData = {
         title: expenseData.title,
-        description: expenseData.description,
         amount: expenseData.amount,
         category: expenseData.category._id,
         date: expenseData.date,
-        year: expenseData.year
       };
       const { success, message } = await updateExpense(expenseData._id, formData, token);
       if (success) {
         Swal.fire({
           icon: "success",
           title: "Expense updated successfully",
-          timer: 700,
+          timer: 800,
         });
         onClose();
         refetchSales();
@@ -89,16 +87,6 @@ const EditExpenseModal = ({ open, onClose, initialData, refetchSales }) => {
           fullWidth
           margin="dense"
           value={expenseData.title || ""}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Description"
-          name="description"
-          fullWidth
-          margin="dense"
-          multiline
-          rows={3}
-          value={expenseData.description || ""}
           onChange={handleChange}
         />
         <TextField
@@ -134,15 +122,6 @@ const EditExpenseModal = ({ open, onClose, initialData, refetchSales }) => {
           value={expenseData.date.split("T")[0] || ""}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          label="Year"
-          name="year"
-          type="number"
-          fullWidth
-          margin="dense"
-          value={expenseData.year || ""}
-          onChange={handleChange}
         />
       </DialogContent>
       <DialogActions>

@@ -75,7 +75,7 @@ const ExpenseCategoryTable = ({ setSelectedPage }) => {
             icon: "success",
             title: "Success",
             text: message,
-            timer: 1500,
+            timer: 800,
           });
           setRows(rows.filter((row) => row.id !== id));
         }

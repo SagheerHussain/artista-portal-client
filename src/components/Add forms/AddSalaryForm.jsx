@@ -183,19 +183,6 @@ const AddSalaryForm = ({ setSelectedPage }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Tax Deduction in % e.g. 10%"
-              type="number"
-              name="textDeduction"
-              value={textDeduction}
-              onChange={(e) => setTextDeduction(e.target.value)}
-              required
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
               label="Current Dollar Rate"
               name="dollarRate"
               type="number"

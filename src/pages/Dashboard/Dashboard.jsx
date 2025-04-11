@@ -16,7 +16,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import CategoryIcon from "@mui/icons-material/Category";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
+import AssuredWorkloadIcon from "@mui/icons-material/AssuredWorkload";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
@@ -42,7 +42,11 @@ import AddUser from "../../components/Add forms/AddUser";
 import TaxTable from "../tax/TaxTable";
 import AddTaxForm from "../../components/Add forms/AddTaxForm";
 import { useDispatch, useSelector } from "react-redux";
+import CampaignIcon from "@mui/icons-material/Campaign";
 import { fetchAnalytics } from "../../store/analyticsSlice";
+import AnnouncementTable from "../announcements/AnnouncementTable";
+import AddAnnouncementForm from "../../components/Add forms/AddAnnouncementForm";
+import { getActiveAnnouncements } from "../../../services/announcement";
 
 const darkTheme = createTheme({
   palette: {
@@ -147,6 +151,14 @@ export default function Dashboard() {
         }
       : null,
 
+    user?.role === "admin"
+      ? {
+          segment: "announcement",
+          title: "Announcement",
+          icon: <CampaignIcon />,
+        }
+      : null,
+
     { kind: "divider" },
     { kind: "header", title: "Analytics" },
     {
@@ -186,27 +198,52 @@ export default function Dashboard() {
   // Get Token From Storage
   const token = JSON.parse(localStorage.getItem("token"));
 
-  const location = useLocation();
-
   // dispatch
   const dispatch = useDispatch();
 
   // Analytics
-  const { totalRevenue, totalRecievedAmount, pendingAmount, clients, tax, netProfit } =
-    useSelector((state) => state.analytics);
+  const {
+    totalRevenue,
+    totalRecievedAmount,
+    pendingAmount,
+    clients,
+    tax,
+    netProfit,
+  } = useSelector((state) => state.analytics);
+
+  
+  const router = useDemoRouter("/dashboard");
+  const [selectedPage, setSelectedPage] = React.useState("dashboard");
+  const [announcements, setAnnouncements] = useState([]);
 
   useEffect(() => {
     dispatch(fetchAnalytics({ user, token }));
-  }, [dispatch, location.pathname]);
-
-  const router = useDemoRouter("/dashboard");
-  const [selectedPage, setSelectedPage] = React.useState("dashboard");
+  }, [dispatch, selectedPage]);
 
   React.useEffect(() => {
     setSelectedPage(router.pathname);
   }, [router.pathname]);
 
-  const totalExpenses = netProfit?.data?.totalExpenses?.USD + netProfit?.data?.totalSalaries?.USD;
+  const totalExpenses =
+    netProfit?.data?.totalExpenses?.USD + netProfit?.data?.totalSalaries?.USD;
+
+  // Get Active Announcement
+  useEffect(() => {
+    async function fetchActiveAnncouncements() {
+      try {
+        const { announcements, success } = await getActiveAnnouncements(token);
+        if (success) {
+          setAnnouncements(announcements);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    if (user?.role === "employee") {
+      fetchActiveAnncouncements();
+    }
+  }, [user]);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -234,6 +271,8 @@ export default function Dashboard() {
                 <UsersTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/tax" ? (
                 <TaxTable setSelectedPage={setSelectedPage} />
+              ) : selectedPage === "/announcement" ? (
+                <AnnouncementTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/reports/sales" ? (
                 <SalesTable setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/reports/expenses" ? (
@@ -258,8 +297,30 @@ export default function Dashboard() {
                 <AddSalaryForm setSelectedPage={setSelectedPage} />
               ) : selectedPage === "/addTax" ? (
                 <AddTaxForm setSelectedPage={setSelectedPage} />
+              ) : selectedPage === "/addAnnouncement" ? (
+                <AddAnnouncementForm setSelectedPage={setSelectedPage} />
               ) : (
                 <>
+                  {/* Announcements */}
+                  <div className={`bg-[#674fb8] flex items-center ${announcements.length > 0 ? "py-1" : "py-0"} [mask-image:linear-gradient(to_right,transparent,black_7%,black_90%,transparent)]`}>
+                    <marquee
+                      behavior=""
+                      direction=""
+                      className="text-white flex items-center"
+                    >
+                      {announcements.length > 0 &&
+                        announcements?.reverse().map(({ announcement }) => (
+                          <span className="me-20">
+                            <CampaignIcon
+                              size={20}
+                              className="text-white pb-1 pe-2"
+                            />
+                            {announcement}
+                          </span>
+                        ))}
+                    </marquee>
+                  </div>
+
                   {/* Dashboard Live Currency Exhange Rates Cards */}
                   {user?.role === "admin" && (
                     <Grid container spacing={3}>
@@ -311,7 +372,7 @@ export default function Dashboard() {
                             <h6 className="2xl:text-base text-[.8rem]">
                               USD to PKR
                             </h6>
-                            <h5 className="text-lg">
+                            <h5 className="sm:text-lg text-[.8rem]">
                               {rates.PKR ? ` ${rates.PKR}` : "Loading..."}
                             </h5>
                           </CardContent>
@@ -400,7 +461,7 @@ export default function Dashboard() {
                             <h6 className="2xl:text-base text-[.8rem]">
                               EUR to PKR
                             </h6>
-                            <h5 className="text-lg">
+                            <h5 className="sm:text-lg text-[.8rem]">
                               {rates.EUR ? ` ${rates.EUR}` : "Loading..."}
                             </h5>
                           </CardContent>
@@ -495,7 +556,7 @@ export default function Dashboard() {
                             <h6 className="2xl:text-base text-[.8rem]">
                               GBP to PKR
                             </h6>
-                            <h5 className="text-lg">
+                            <h5 className="sm:text-lg text-[.8rem]">
                               {rates.GBP ? `${rates.GBP}` : "Loading..."}
                             </h5>
                           </CardContent>
@@ -535,7 +596,7 @@ export default function Dashboard() {
                             <h6 className="2xl:text-base text-[.8rem]">
                               AED to PKR
                             </h6>
-                            <h5 className="text-lg">
+                            <h5 className="sm:text-lg text-[.8rem]">
                               {rates.AED ? ` ${rates.AED}` : "Loading..."}
                             </h5>
                           </CardContent>
@@ -628,7 +689,9 @@ export default function Dashboard() {
                               <h6 className="2xl:text-base text-[.8rem]">
                                 Tax Deduction
                               </h6>
-                              <h5 className="text-lg">{tax?.data?.overall?.averageTax}</h5>
+                              <h5 className="text-lg">
+                                {tax?.data?.overall?.averageTax || 0}
+                              </h5>
                             </CardContent>
                           </DashboardCard>
                         </Grid>
@@ -656,7 +719,9 @@ export default function Dashboard() {
                               <h6 className="2xl:text-base text-[.8rem]">
                                 Net Profit
                               </h6>
-                              <h5 className="text-lg">${netProfit?.data?.netProfitUSD.toFixed(2)}</h5>
+                              <h5 className="text-lg">
+                                ${netProfit?.data?.netProfitUSD.toFixed(2) || 0}
+                              </h5>
                             </CardContent>
                           </DashboardCard>
                         </Grid>

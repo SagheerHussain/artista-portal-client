@@ -13,7 +13,11 @@ import Swal from "sweetalert2";
 import GridTable from "../../components/GridTable";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { deleteExpense, getExpenses, getFilteredExpense } from "../../../services/expense";
+import {
+  deleteExpense,
+  getExpenses,
+  getFilteredExpense,
+} from "../../../services/expense";
 import EditExpenseModal from "./EditExpenseModal";
 
 const ExpenseTable = ({ setSelectedPage }) => {
@@ -58,7 +62,6 @@ const ExpenseTable = ({ setSelectedPage }) => {
       id: item._id,
       No: index + 1,
       title: item.title,
-      description: item.description,
       amount: item.amount,
       month: item.month,
       year: item.year,
@@ -128,7 +131,7 @@ const ExpenseTable = ({ setSelectedPage }) => {
             icon: "success",
             title: "Success",
             text: message,
-            timer: 1500,
+            timer: 800,
           });
           setRows(rows.filter((row) => row.id !== id));
         }
@@ -142,8 +145,17 @@ const ExpenseTable = ({ setSelectedPage }) => {
   const columns = [
     { field: "No", headerName: "Index", flex: 1, minWidth: 150 },
     { field: "title", headerName: "Title", flex: 1, minWidth: 150 },
-    { field: "description", headerName: "Description", flex: 1, minWidth: 150 },
-    { field: "amount", headerName: "Amount", flex: 1, minWidth: 150 },
+    {
+      field: "amount",
+      headerName: "Amount",
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) => (
+        <span className="text-white">
+          Rs.{params.row.amount.toLocaleString()}
+        </span>
+      ),
+    },
     { field: "month", headerName: "Month", flex: 1, minWidth: 150 },
     { field: "year", headerName: "Year", flex: 1, minWidth: 150 },
 
@@ -173,6 +185,7 @@ const ExpenseTable = ({ setSelectedPage }) => {
 
       <Box
         sx={{ display: "flex", justifyContent: "end", marginBottom: "20px" }}
+        className="gap-4"
       >
         <Button
           variant="outlined"
@@ -180,6 +193,19 @@ const ExpenseTable = ({ setSelectedPage }) => {
           onClick={() => setSelectedPage("/addExpense")}
         >
           Add Expense
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => {
+            setFilters({
+              month: "",
+              year: ""
+            });
+            fetchAllExpenses(); // fetch original data
+          }}
+        >
+          Reset Expenses
         </Button>
       </Box>
 
@@ -222,7 +248,7 @@ const ExpenseTable = ({ setSelectedPage }) => {
               label="Year"
               onChange={(e) => handleFilterChange("year", e.target.value)}
             >
-              {[2025, 2024, 2023, 2022, 2021, 2020].map((year) => (
+              {[2025].map((year) => (
                 <MenuItem key={year} value={year}>
                   {year}
                 </MenuItem>

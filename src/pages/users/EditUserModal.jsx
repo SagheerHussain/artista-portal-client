@@ -19,6 +19,7 @@ const EditUserModal = ({
     name: "",
     email: "",
     role: "",
+    status: "",
     profilePicture: "",
   });
 
@@ -78,7 +79,7 @@ const EditUserModal = ({
         Swal.fire({
           icon: "error",
           text: response.message,
-          timer: 1500,
+          timer: 800,
         });
         setLoading(false);
       }
@@ -87,7 +88,7 @@ const EditUserModal = ({
       Swal.fire({
         icon: "error",
         text: "Failed to update user",
-        timer: 1500,
+        timer: 1000,
       });
     } finally {
       setLoading(false);
@@ -147,6 +148,23 @@ const EditUserModal = ({
                 {["admin", "employee"].map((role) => (
                   <MenuItem key={role} value={role}>
                     {role}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                select
+                label="Status"
+                name="status"
+                fullWidth
+                margin="dense"
+                value={formData?.status || "active"}
+                onChange={handleChange}
+              >
+                {["active", "resigned"].map((status) => (
+                  <MenuItem key={status} value={status}>
+                    {status}
                   </MenuItem>
                 ))}
               </TextField>
