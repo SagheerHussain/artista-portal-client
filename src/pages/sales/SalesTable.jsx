@@ -191,7 +191,7 @@ const SalesTable = ({ setSelectedPage }) => {
             icon: "success",
             title: "Success",
             text: message,
-            timer: 1500,
+            timer: 800,
           });
           setRows(rows.filter((row) => row.id !== id));
           dispatch(fetchAnalytics({ user, token }));
@@ -303,10 +303,11 @@ const SalesTable = ({ setSelectedPage }) => {
     <Box sx={{ padding: 3, backgroundColor: "#121212", borderRadius: 2 }}>
       {/* Add Sales Button */}
 
-      {user?.role === "employee" && (
-        <Box
-          sx={{ display: "flex", justifyContent: "end", marginBottom: "20px" }}
-        >
+      <Box
+        sx={{ display: "flex", justifyContent: "end", marginBottom: "20px" }}
+        className="gap-4"
+      >
+        {user?.role === "employee" && (
           <Button
             variant="outlined"
             startIcon={<AddIcon />}
@@ -314,8 +315,23 @@ const SalesTable = ({ setSelectedPage }) => {
           >
             Add Sales
           </Button>
-        </Box>
-      )}
+        )}
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => {
+            setFilters({
+              month: "",
+              year: "",
+              employeeId: "",
+              status: ""
+            });
+            fetchAllSales(); // fetch original data
+          }}
+        >
+          Reset Sales
+        </Button>
+      </Box>
 
       {/* Filters */}
       <div className="search_records sm:flex justify-between gap-4 mb-4">
@@ -360,6 +376,7 @@ const SalesTable = ({ setSelectedPage }) => {
             label="Search Records"
             variant="outlined"
             fullWidth
+            value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
           />
         </div>

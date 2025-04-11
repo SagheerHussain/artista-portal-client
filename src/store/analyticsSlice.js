@@ -10,6 +10,7 @@ import {
   getClientsByEmployee,
   getTaxSummary
 } from "../../services/analyticsService";
+import { getProfit } from "../../services/profit";
 
 export const fetchAnalytics = createAsyncThunk(
   "analytics/fetchAnalytics",
@@ -25,7 +26,7 @@ export const fetchAnalytics = createAsyncThunk(
       ? await getClients(token)
       : await getClientsByEmployee(user._id, token);
     const tax = await getTaxSummary(token);
-    console.log("tax summary", tax)
+    const netProfit = await getProfit(token);
 
     return {
       totalRevenue: revenue.totalAmount,
@@ -33,6 +34,7 @@ export const fetchAnalytics = createAsyncThunk(
       pendingAmount: pending.totalAmount,
       clients: clients.totalClients,
       tax: tax,
+      netProfit
     };
   }
 );
@@ -44,6 +46,8 @@ const analyticsSlice = createSlice({
     totalRecievedAmount: 0,
     pendingAmount: 0,
     clients: 0,
+    tax: 0,
+    netProfit: 0,
     status: "idle", // loading, succeeded, failed
     error: null,
   },

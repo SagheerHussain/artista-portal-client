@@ -203,14 +203,15 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
         onClose();
         refetchSales();
         setLoading(false);
+        dispatch(fetchAnalytics({ user, token }));
       } else {
         Swal.fire({
           icon: "error",
           title: "Error",
           text: message,
+          timer: 1200,
         });
         setLoading(false);
-        dispatch(fetchAnalytics({ user, token }));
       }
     } catch (error) {
       console.error("Error updating sale:", error);
@@ -259,7 +260,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Upfront Amount $"
+              label="Upfront Amount in $"
               name="upfrontAmount"
               type="number"
               value={formData.upfrontAmount}
@@ -271,7 +272,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Received Amount $"
+              label="Received Amount in $"
               name="receivedAmount"
               type="number"
               value={formData.receivedAmount}
@@ -284,7 +285,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Total Received Amount $"
+              label="Total Received Amount in $"
               type="number"
               value={totalRecievedAmount}
               disabled
@@ -295,7 +296,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Remaining Amount $"
+              label="Remaining Amount in $"
               type="number"
               value={remainingAmount}
               disabled
@@ -306,7 +307,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           <Grid item xs={12} md={6}>
             <TextField
               fullWidth
-              label="Total Amount $"
+              label="Total Amount in $"
               name="totalAmount"
               type="number"
               value={formData.totalAmount}

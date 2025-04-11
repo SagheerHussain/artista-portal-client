@@ -225,7 +225,7 @@ const SalariesTable = ({ setSelectedPage }) => {
             icon: "success",
             title: "Success",
             text: message,
-            timer: 1500,
+            timer: 800,
           });
           setRows(rows.filter((row) => row.id !== id));
         }
@@ -270,6 +270,7 @@ const SalariesTable = ({ setSelectedPage }) => {
           alignItems: "center",
           marginBottom: "20px",
         }}
+        className="gap-4"
       >
         <Button
           variant="outlined"
@@ -277,6 +278,19 @@ const SalariesTable = ({ setSelectedPage }) => {
           onClick={() => setSelectedPage("/addSalary")}
         >
           Add Salary
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => {
+            setMonth("");
+            setYear("");
+            setEmployee("");
+            setStatus("");
+            fetchSalaries(); // fetch original data
+          }}
+        >
+          Reset Salaries
         </Button>
       </Box>
 

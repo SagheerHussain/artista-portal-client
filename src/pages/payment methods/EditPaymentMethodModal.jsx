@@ -55,7 +55,7 @@ const EditPaymentMethodModal = ({
           icon: "success",
           title: "Success",
           text: message,
-          timer: 1500,
+          timer: 800,
         });
         refetchSales();
         onClose();

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { TextField, Button, Box, MenuItem, Typography } from "@mui/material";
+import { TextField, Button, Box, Typography } from "@mui/material";
 import { ClipLoader } from "react-spinners";
-import { createExpanceCategory } from "../../../services/expense";
 import Swal from "sweetalert2";
+import { createAnnouncement } from "../../../services/announcement";
 
-const ExpenseCategoryForm = ({ setSelectedPage }) => {
+const AddAnnouncementForm = ({ setSelectedPage }) => {
   // Token
   const token = JSON.parse(localStorage.getItem("token"));
   const user = JSON.parse(localStorage.getItem("user"));
@@ -12,8 +12,8 @@ const ExpenseCategoryForm = ({ setSelectedPage }) => {
   // State Variables
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    admin: user._id,
+    announcement: "",
+    admin: user?._id,
   });
 
   const handleChange = (e) => {
@@ -23,17 +23,17 @@ const ExpenseCategoryForm = ({ setSelectedPage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    if (!formData.name) {
+    if (!formData.announcement || !formData.admin) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Name is required",
+        text: "All fields are required",
       });
       setLoading(false);
       return;
     }
     try {
-      const { success, message } = await createExpanceCategory(formData, token);
+      const { success, message } = await createAnnouncement(token, formData);
       if (success) {
         Swal.fire({
           icon: "success",
@@ -43,7 +43,7 @@ const ExpenseCategoryForm = ({ setSelectedPage }) => {
         });
         setLoading(false);
         setTimeout(() => {
-          setSelectedPage("/reports/expenseCategory");
+          setSelectedPage("/announcement");
         }, 1200);
       } else {
         Swal.fire({
@@ -59,7 +59,7 @@ const ExpenseCategoryForm = ({ setSelectedPage }) => {
         icon: "error",
         title: "Error",
         text:
-          error.response?.data?.message || "Failed to create expense category",
+          error.response?.data?.message || "Failed to create tax",
       });
       setLoading(false);
     }
@@ -72,14 +72,14 @@ const ExpenseCategoryForm = ({ setSelectedPage }) => {
       sx={{ display: "flex", flexDirection: "column", width: "100%" }}
     >
       <Typography variant="h6" gutterBottom>
-        Add Expense
+        Add Announcement
       </Typography>
 
-      <div className="mb-4 w-full">
+      <div className="mb-4 flex items-center gap-4">
         <TextField
-          label="Category Name"
-          name="name"
-          value={formData.name}
+          label="Announcement"
+          name="announcement"
+          value={formData.announcement}
           onChange={handleChange}
           fullWidth
           required
@@ -89,7 +89,7 @@ const ExpenseCategoryForm = ({ setSelectedPage }) => {
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
         <Button
           variant="outlined"
-          onClick={() => setSelectedPage("/reports/expenseCategory")}
+          onClick={() => setSelectedPage("/tax")}
           color="secondary"
         >
           Cancel
@@ -100,11 +100,11 @@ const ExpenseCategoryForm = ({ setSelectedPage }) => {
           color="primary"
           disabled={loading}
         >
-          {loading ? <ClipLoader size={28} color="#fff" /> : "Add Category"}
+          {loading ? <ClipLoader size={28} color="#fff" /> : "Add Tax"}
         </Button>
       </Box>
     </Box>
   );
 };
 
-export default ExpenseCategoryForm;
+export default AddAnnouncementForm;

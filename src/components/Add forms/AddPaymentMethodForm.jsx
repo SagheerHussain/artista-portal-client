@@ -38,7 +38,7 @@ const AddPaymentMethodForm = ({ setSelectedPage }) => {
           icon: "success",
           title: "Success",
           text: message,
-          timer: 1500,
+          timer: 800,
         });
         setLoading(false);
         setTimeout(() => {

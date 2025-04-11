@@ -61,7 +61,7 @@ const EditExpenseModal = ({ open, onClose, initialData, refetchSales }) => {
         Swal.fire({
           icon: "success",
           title: "Expense updated successfully",
-          timer: 700,
+          timer: 800,
         });
         onClose();
         refetchSales();

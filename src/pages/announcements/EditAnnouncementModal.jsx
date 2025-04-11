@@ -1,51 +1,54 @@
 import React, { useState, useEffect } from "react";
 import {
   TextField,
-  Box,
-  Typography,
-  Modal,
   Grid,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  Button,
+  MenuItem,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { ClipLoader } from "react-spinners";
-import { updateExpanceCategory } from "../../../services/expense";
+import { updateTax } from "../../../services/tax";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
+import { updateAnnouncement } from "../../../services/announcement";
 
-const EditExpenseCategoryModal = ({
+const EditAnnouncementModal = ({
   open,
   onClose,
   initialData,
-  refetchSales,
+  refetchTaxes,
 }) => {
   // Get User & Token
-  const user = JSON.parse(localStorage.getItem("user"));
   const token = JSON.parse(localStorage.getItem("token"));
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const dispatch = useDispatch();
 
   // State Variables
   const [loading, setLoading] = useState(false);
-  const [expenseData, setExpenseData] = useState(initialData || {});
+  const [announcementData, setAnnouncementData] = useState(initialData || {});
 
   // Update state when initialData changes
   useEffect(() => {
-    setExpenseData(initialData || {});
+    setAnnouncementData(initialData || {});
   }, [initialData]);
 
   const handleChange = (e) => {
-    setExpenseData({ ...expenseData, [e.target.name]: e.target.value });
+    setAnnouncementData({ ...announcementData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { success, message } = await updateExpanceCategory(
-        expenseData._id,
-        expenseData,
-        token
+      const { success, message } = await updateAnnouncement(
+        token,
+        announcementData._id,
+        announcementData
       );
       if (success) {
         setLoading(false);
@@ -55,8 +58,9 @@ const EditExpenseCategoryModal = ({
           text: message,
           timer: 800,
         });
-        refetchSales();
+        refetchTaxes();
         onClose();
+        dispatch(fetchAnalytics({ user, token }));
       }
     } catch (error) {
       setLoading(false);
@@ -66,20 +70,37 @@ const EditExpenseCategoryModal = ({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit Expense</DialogTitle>
+      <DialogTitle>Edit Announcement</DialogTitle>
 
       <DialogContent>
         <Grid container spacing={2} className="py-4">
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Expense Category Name"
-              name="name"
-              defaultValue={expenseData.name}
+              label="Announcement"
+              name="announcement"
+              defaultValue={announcementData.announcement || ""}
               onChange={handleChange}
               InputLabelProps={{ shrink: true }}
               sx={{ borderRadius: 1 }}
             />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              select
+              label="Status"
+              name="status"
+              fullWidth
+              margin="dense"
+              value={announcementData?.status || ""}
+              onChange={handleChange}
+            >
+              {["active", "inactive"].map((status) => (
+                <MenuItem key={status} value={status}>
+                  {status}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
         </Grid>
       </DialogContent>
@@ -102,4 +123,4 @@ const EditExpenseCategoryModal = ({
   );
 };
 
-export default EditExpenseCategoryModal;
+export default EditAnnouncementModal;

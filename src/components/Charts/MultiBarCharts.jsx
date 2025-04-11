@@ -10,6 +10,8 @@ import {
   Legend,
 } from "recharts";
 import { Listbox } from "@headlessui/react";
+import { useSelector } from "react-redux";
+
 import {
   getMonthlyExpenseData,
   getMonthlySalaryData,
@@ -24,12 +26,15 @@ const options = [
   { label: "Yearly Sales", key: "yearlySales" },
   { label: "Monthly Salary", key: "monthlySalary" },
   { label: "Yearly Salary", key: "yearlySalary" },
-  { label: "Yearly Expense", key: "yearlyExpense" },
   { label: "Monthly Expense", key: "monthlyExpense" },
+  { label: "Yearly Expense", key: "yearlyExpense" },
+  { label: "Monthly Tax", key: "monthlyTax" },
+  { label: "Yearly Tax", key: "yearlyTax" },
 ];
 
 const MultiBarChart = () => {
   const token = JSON.parse(localStorage.getItem("token"));
+  const { tax } = useSelector((state) => state.analytics);
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
   const [monthlySalesData, setMonthlySalesData] = useState([]);
@@ -39,7 +44,20 @@ const MultiBarChart = () => {
   const [yearlySalesData, setYearlySalesData] = useState([]);
   const [yearlyExpenseData, setYearlyExpenseData] = useState([]);
 
-  // Fetch & Transform Data
+  // Tax Data from Redux
+  const monthlyTaxData =
+    tax?.data?.currentYear?.monthlyBreakdown?.map((item) => ({
+      name: item.month,
+      value: parseFloat(item.totalPercentage),
+    })) || [];
+
+  const yearlyTaxData =
+    tax?.data?.yearlyAverageTax?.map((item) => ({
+      name: `${item.year}`,
+      value: parseFloat(item.averageTax),
+    })) || [];
+
+  // Fetch & Transform Data (except tax, which is from Redux)
   const fetchingData = async () => {
     try {
       const monthlySales = await getMonthlySalesData();
@@ -49,49 +67,47 @@ const MultiBarChart = () => {
       const yearlySales = await getYearlySalesData();
       const yearlyExpenses = await getYearlyExpenseData(token);
 
-      // Transform Monthly Sales Data
-      const transformedMonthlySales = monthlySales.data.map((item) => ({
-        name: item.month,
-        value: item.totalSales,
-      }));
+      setMonthlySalesData(
+        monthlySales.data.map((item) => ({
+          name: item.month,
+          value: item.totalSales,
+        }))
+      );
 
-      // Transform Yearly Sales Data
-      const transformedYearlySales = yearlySales.data.map((item) => ({
-        name: item.year,
-        value: item.totalSales,
-      }));
+      setYearlySalesData(
+        yearlySales.data.map((item) => ({
+          name: item.year,
+          value: item.totalSales,
+        }))
+      );
 
-      // Transform Monthly Salary Data
-      const transformedMonthlySalaries = monthlySalaries.data.map((item) => ({
-        name: item.month,
-        value: item.totalSalaries,
-      }));
+      setMonthlySalaryData(
+        monthlySalaries.data.map((item) => ({
+          name: item.month,
+          value: item.totalSalaries,
+        }))
+      );
 
-      // Transform Yearly Salary Data
-      const transformedYearlySalaries = yearlySalaries.data.map((item) => ({
-        name: item.year,
-        value: item.totalSalaries,
-      }));
+      setYearlySalaryData(
+        yearlySalaries.data.map((item) => ({
+          name: item.year,
+          value: item.totalSalaries,
+        }))
+      );
 
-      // Transform Monthly Expense Data
-      const transformedMonthlyExpenses = monthlyExpenses.data.map((item) => ({
-        name: item.month,
-        value: item.totalExpenses,
-      }));
+      setMonthlyExpenseData(
+        monthlyExpenses.data.map((item) => ({
+          name: item.month,
+          value: item.totalExpenses,
+        }))
+      );
 
-      // Transform Yearly Expense Data
-      const transformedYearlyExpenses = yearlyExpenses.data.map((item) => ({
-        name: item.year,
-        value: item.totalExpenses,
-      }));
-
-      // Set Transformed Data
-      setMonthlySalesData(transformedMonthlySales);
-      setMonthlySalaryData(transformedMonthlySalaries);
-      setYearlySalaryData(transformedYearlySalaries);
-      setYearlySalesData(transformedYearlySales);
-      setMonthlyExpenseData(transformedMonthlyExpenses);
-      setYearlyExpenseData(transformedYearlyExpenses);
+      setYearlyExpenseData(
+        yearlyExpenses.data.map((item) => ({
+          name: item.year,
+          value: item.totalExpenses,
+        }))
+      );
     } catch (error) {
       console.log(error);
     }
@@ -115,6 +131,10 @@ const MultiBarChart = () => {
         return monthlyExpenseData;
       case "yearlyExpense":
         return yearlyExpenseData;
+      case "monthlyTax":
+        return monthlyTaxData;
+      case "yearlyTax":
+        return yearlyTaxData;
       default:
         return monthlySalesData;
     }
@@ -125,7 +145,7 @@ const MultiBarChart = () => {
       <div className="flex justify-between items-center mb-4">
         <Listbox value={selectedOption} onChange={setSelectedOption}>
           <div className="relative">
-            <Listbox.Button className="bg-zinc-900 px-4 py-2 rounded-lg shadow">
+            <Listbox.Button className="bg-zinc-900 px-4 py-2 rounded-lg shadow text-white">
               {selectedOption.label}
             </Listbox.Button>
             <Listbox.Options className="absolute mt-2 bg-zinc-900 shadow rounded-lg z-10">
@@ -133,7 +153,7 @@ const MultiBarChart = () => {
                 <Listbox.Option
                   key={option.key}
                   value={option}
-                  className="cursor-pointer px-4 py-2 hover:bg-zinc-700"
+                  className="cursor-pointer px-4 py-2 hover:bg-zinc-700 text-white"
                 >
                   {option.label}
                 </Listbox.Option>
@@ -150,7 +170,11 @@ const MultiBarChart = () => {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip
-              formatter={(value) => [`${value.toLocaleString()} PKR`, "Amount"]}
+              formatter={(value) =>
+                selectedOption.key.includes("Tax")
+                  ? [`${value.toFixed(2)}%`, "Tax"]
+                  : [`${value.toLocaleString()} PKR`, "Amount"]
+              }
               contentStyle={{
                 backgroundColor: "#1F2937",
                 borderRadius: "8px",
@@ -162,7 +186,11 @@ const MultiBarChart = () => {
               cursor={{ fill: "#212121" }}
             />
             <Legend />
-            <Bar dataKey="value" fill="#C96FFE" radius={[8, 8, 0, 0]} />
+            <Bar
+              dataKey="value"
+              fill={"#C96FFE"}
+              radius={[8, 8, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -171,3 +199,4 @@ const MultiBarChart = () => {
 };
 
 export default MultiBarChart;
+

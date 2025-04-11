@@ -14,6 +14,8 @@ import {
 import Swal from "sweetalert2";
 import { ClipLoader } from "react-spinners";
 import { updateTax } from "../../../services/tax";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
 
 const EditTaxModal = ({
   open,
@@ -23,6 +25,9 @@ const EditTaxModal = ({
 }) => {
   // Get User & Token
   const token = JSON.parse(localStorage.getItem("token"));
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const dispatch = useDispatch();
 
   // State Variables
   const [loading, setLoading] = useState(false);
@@ -56,6 +61,7 @@ const EditTaxModal = ({
         });
         refetchTaxes();
         onClose();
+        dispatch(fetchAnalytics({ user, token }));
       }
     } catch (error) {
       setLoading(false);

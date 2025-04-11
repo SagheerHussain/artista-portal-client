@@ -47,7 +47,7 @@ const ExpenseForm = ({ onSubmit, setSelectedPage }) => {
         Swal.fire({
           icon: "success",
           title: "Expense created successfully",
-          timer: 700,
+          timer: 800,
         });
         setLoading(false);
         setTimeout(() => {

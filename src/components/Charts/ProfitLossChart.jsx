@@ -19,12 +19,13 @@ import {
   getYearlySalaryData,
   getYearlySalesData,
 } from "../../../services/analyticsService";
+import { useSelector } from "react-redux";
 
-// Yearly Aggregated Data Placeholder
-const YearlyOptions = ["2025"];
+const YearlyOptions = ["2025"]; // You can dynamically generate this
 
 const ProfitLossChart = () => {
   const token = JSON.parse(localStorage.getItem("token"));
+  const { tax } = useSelector((state) => state.analytics);
 
   const [viewType, setViewType] = useState("Yearly View");
   const [selectedYear, setSelectedYear] = useState("2025");
@@ -35,7 +36,7 @@ const ProfitLossChart = () => {
   const [yearlySalaryData, setYearlySalaryData] = useState([]);
   const [yearlyExpenseData, setYearlyExpenseData] = useState([]);
 
-  // Get Monthly Sales Data
+  // Fetch Monthly Data
   const fetchingMonthlyData = async () => {
     try {
       const monthlySales = await getMonthlySalesData();
@@ -49,28 +50,7 @@ const ProfitLossChart = () => {
     }
   };
 
-  useEffect(() => {
-    fetchingMonthlyData();
-  }, []);
-
-  // Monthly Data Calculation (Revenue, Expense, Profit)
-  const getMonthlyData = () => {
-    return monthlySalesData.map((item, index) => {
-      const salary = monthlySalaryData[index].totalSalaries;
-      const expense = monthlyExpenseData[index].totalExpenses;
-      const totalExpense = salary + expense;
-      const profit = item.totalSales - totalExpense;
-
-      return {
-        name: item.month,
-        revenue: item.totalSales,
-        expense: totalExpense,
-        profit,
-      };
-    });
-  };
-
-  // Get Monthly Sales Data
+  // Fetch Yearly Data
   const fetchingYearlyData = async () => {
     try {
       const yearlySales = await getYearlySalesData();
@@ -85,22 +65,63 @@ const ProfitLossChart = () => {
   };
 
   useEffect(() => {
+    fetchingMonthlyData();
     fetchingYearlyData();
   }, []);
 
-  // Yearly Data Calculation
-  const getYearlyData = () => {
-    return yearlySalesData?.map((item, index) => {
-      const salary = yearlySalaryData[index]?.totalSalaries || 0;
-      const expense = yearlyExpenseData[index]?.totalExpenses || 0;
+  // Monthly Profit Calculation with Tax
+  const getMonthlyData = () => {
+    const selectedYearTax = tax?.data?.yearlyAverageTax?.find(
+      (t) => parseInt(t.year) === parseInt(selectedYear)
+    );
+    const taxPercent = selectedYearTax
+      ? parseFloat(selectedYearTax.averageTax.replace("%", ""))
+      : 0;
+
+    return monthlySalesData.map((item, index) => {
+      const salary = monthlySalaryData[index]?.totalSalaries || 0;
+      const expense = monthlyExpenseData[index]?.totalExpenses || 0;
       const totalExpense = salary + expense;
-      const profit = item?.totalSales - totalExpense || 0;
+      const profit = item.totalSales - totalExpense;
+      const taxAmount = profit * (taxPercent / 100);
+      const netProfit = profit - taxAmount;
 
       return {
         name: item.month,
         revenue: item.totalSales,
         expense: totalExpense,
-        profit,
+        profit: netProfit,
+        tax: taxAmount,
+        taxPercent: taxPercent,
+      };
+    });
+  };
+
+  // Yearly Profit Calculation with Year-Specific Tax
+  const getYearlyData = () => {
+    return yearlySalesData.map((item, index) => {
+      const salary = yearlySalaryData[index]?.totalSalaries || 0;
+      const expense = yearlyExpenseData[index]?.totalExpenses || 0;
+      const totalExpense = salary + expense;
+      const profit = item.totalSales - totalExpense;
+
+      const yearTax = tax?.data?.yearlyAverageTax?.find(
+        (t) => parseInt(t.year) === parseInt(item.year)
+      );
+      const averageTaxPercent = yearTax
+        ? parseFloat(yearTax.averageTax.replace("%", ""))
+        : 0;
+
+      const taxAmount = profit * (averageTaxPercent / 100);
+      const netProfit = profit - taxAmount;
+
+      return {
+        name: item.year.toString(),
+        revenue: item.totalSales,
+        expense: totalExpense,
+        profit: netProfit,
+        tax: taxAmount,
+        taxPercent: averageTaxPercent,
       };
     });
   };
@@ -113,10 +134,10 @@ const ProfitLossChart = () => {
         <div className="flex gap-4">
           <Listbox value={viewType} onChange={setViewType}>
             <div className="relative">
-              <Listbox.Button className="bg-zinc-900 px-4 py-2 rounded-lg shadow">
+              <Listbox.Button className="bg-zinc-900 px-4 py-2 rounded-lg shadow text-white">
                 {viewType}
               </Listbox.Button>
-              <Listbox.Options className="absolute mt-2 bg-zinc-900 shadow rounded-lg z-10">
+              <Listbox.Options className="absolute mt-2 bg-zinc-900 shadow rounded-lg z-10 text-white">
                 <Listbox.Option
                   value="Yearly View"
                   className="cursor-pointer px-4 py-2 hover:bg-zinc-700"
@@ -136,10 +157,10 @@ const ProfitLossChart = () => {
           {viewType === "Monthly View" && (
             <Listbox value={selectedYear} onChange={setSelectedYear}>
               <div className="relative">
-                <Listbox.Button className="bg-zinc-900 px-4 py-2 rounded-lg shadow">
+                <Listbox.Button className="bg-zinc-900 px-4 py-2 rounded-lg shadow text-white">
                   {selectedYear}
                 </Listbox.Button>
-                <Listbox.Options className="absolute mt-2 bg-zinc-900 shadow rounded-lg z-10">
+                <Listbox.Options className="absolute mt-2 bg-zinc-900 shadow rounded-lg z-10 text-white">
                   {YearlyOptions.map((year) => (
                     <Listbox.Option
                       key={year}
@@ -167,25 +188,34 @@ const ProfitLossChart = () => {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip
-            formatter={(value, name) => [`${value.toLocaleString()} PKR`, name]}
+               formatter={(value, name, props) => {
+                if (name === "taxPercent") {
+                  return [`${value.toFixed(2)}%`, name];
+                } else {
+                  return [`${value.toLocaleString()} PKR`, name];
+                }
+              }}
               contentStyle={{
                 backgroundColor: "#1F2937",
                 borderRadius: "8px",
                 border: "none",
                 color: "#fff",
               }}
-              itemStyle={{ color: "#4FA0FF" }} // Tooltip values white
-              labelStyle={{ color: "#C96FFE " }} // Tooltip label white
+              itemStyle={{ color: "#4FA0FF" }}
+              labelStyle={{ color: "#C96FFE" }}
               cursor={{ fill: "#212121" }}
             />
             <Legend />
             <Bar dataKey="revenue" fill="#C96FFE" radius={[8, 8, 0, 0]} />
             <Bar dataKey="expense" fill="#4FA0FF" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="tax" fill="#4FA0FF" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="taxPercent" fill="#F59E0B" radius={[8, 8, 0, 0]} />
             <Line
               type="monotone"
               dataKey="profit"
               stroke="#F59E0B"
               strokeWidth={3}
+              dot={{ r: 4 }}
             />
           </ComposedChart>
         </ResponsiveContainer>
@@ -195,3 +225,4 @@ const ProfitLossChart = () => {
 };
 
 export default ProfitLossChart;
+

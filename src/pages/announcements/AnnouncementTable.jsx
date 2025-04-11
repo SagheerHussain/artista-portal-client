@@ -2,103 +2,80 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import GridTable from "../../components/GridTable";
-import { deleteEmployee, getEmployees } from "../../../services/users";
 import { MdDelete } from "react-icons/md";
 import { FaPencilAlt } from "react-icons/fa";
-import EditUserModal from "./EditUserModal";
 import Swal from "sweetalert2";
+import { useDispatch } from "react-redux";
+import {
+  deleteAnnouncement,
+  getAnnouncements,
+} from "../../../services/announcement";
+import EditAnnouncementModal from "./EditAnnouncementModal";
 
-const UsersTable = ({ setSelectedPage }) => {
+const AnnouncementTable = ({ setSelectedPage }) => {
   // Get User & Token
   const user = JSON.parse(localStorage.getItem("user"));
   const token = JSON.parse(localStorage.getItem("token"));
 
+  const dispatch = useDispatch();
+
   // State Variables
-  const [userId, setUserId] = useState("");
+  const [announcementId, setAnnouncementId] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [rows, setRows] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
 
   // Fetch Employees Data
-  const fetchUsers = async () => {
+  const fetchAnnouncements = async () => {
     try {
-      const usersData = await getEmployees(token);
-      setUsers(usersData.users);
+      const { announcements, success, message } = await getAnnouncements(token);
+      if (success) {
+        setAnnouncements(announcements);
+      }
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchAnnouncements();
   }, []);
 
   // Format Users Data
   useEffect(() => {
-    const formattedRows = users.reverse().map((item, index) => ({
+    const formattedRows = announcements?.reverse().map((item, index) => ({
       id: item._id,
       No: index + 1,
-      name: item.name,
-      email: item.email,
-      role: item.role,
+      announcement: item.announcement,
       status: item?.status,
-      // profilePicture: item.profilePicture,
+      admin: item?.admin?.name,
     }));
     setRows(formattedRows);
-  }, [users]);
+  }, [announcements]);
 
   // Table Columns
   const columns = [
     { field: "No", headerName: "Index", flex: 1, minWidth: 150 },
-    { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
-    { field: "email", headerName: "Email", flex: 1, minWidth: 150 },
     {
-      field: "role",
-      headerName: "Role",
+      field: "announcement",
+      headerName: "Announcement",
       flex: 1,
-      minWidth: 150,
-      renderCell: (params) => (
-        <span
-          className={`${params.row.role === "admin" ? "text-green-400" : "text-orange-500"}`}
-        >
-          {params.row.role}
-        </span>
-      ),
+      minWidth: 400,
     },
     {
       field: "status",
       headerName: "Status",
       flex: 1,
-      minWidth: 150,
+      minWidth: 50,
       renderCell: (params) => (
-        <span
-          className={`${params.row.status === "active" ? "text-green-600" : "text-red-500"}`}
-        >
-          {params.row.status}
+        <span className={`${params.value === "active" ? "text-green-500" : "text-red-500"}`}>
+          {params.value === "active" ? "Active" : "Inactive"}
         </span>
       ),
     },
-    // {
-    //   field: "profilePicture",
-    //   headerName: "Profile Picture",
-    //   flex: 1,
-    //   minWidth: 150,
-    //   renderCell: (params) => (
-    //     <a
-    //       href={
-    //         params.row.profilePicture ||
-    //         "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-    //       }
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //       className="text-white underline"
-    //     >
-    //       View Profile Photo
-    //     </a>
-    //   ),
-    // },
+    { field: "admin", headerName: "Admin", flex: 1, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
@@ -107,25 +84,23 @@ const UsersTable = ({ setSelectedPage }) => {
       sortable: false,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => handleEditUser(params.row.id)}>
+          <IconButton onClick={() => handleEditAnnouncement(params.row.id)}>
             <FaPencilAlt size={16} className="text-[#71717a]" />
           </IconButton>
 
-          {/* {user?.role === "admin" && (
-            <IconButton onClick={() => handleDelete(params.row.id)}>
-              <MdDelete size={18} className="text-[#bc134f]" />
-            </IconButton>
-          )} */}
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <MdDelete size={18} className="text-[#bc134f]" />
+          </IconButton>
         </>
       ),
     },
   ];
 
   // Edit User Modal
-  const handleEditUser = (id) => {
-    setUserId(id);
-    const user = users.find((u) => id === u._id);
-    setSelectedUser(user);
+  const handleEditAnnouncement = (id) => {
+    setAnnouncementId(id);
+    const announcement = announcements.find((u) => id === u._id);
+    setSelectedAnnouncement(announcement);
     setEditModalOpen(true);
   };
 
@@ -133,7 +108,7 @@ const UsersTable = ({ setSelectedPage }) => {
   const handleDelete = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to delete this user? This action cannot be undone.",
+      text: "Do you really want to delete this announcement? This action cannot be undone.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
@@ -143,7 +118,7 @@ const UsersTable = ({ setSelectedPage }) => {
 
     if (result.isConfirmed) {
       try {
-        const { success, message } = await deleteEmployee(id, token);
+        const { success, message } = await deleteAnnouncement(token, id);
         if (success) {
           Swal.fire({
             icon: "success",
@@ -170,9 +145,9 @@ const UsersTable = ({ setSelectedPage }) => {
           <Button
             variant="outlined"
             startIcon={<AddIcon />}
-            onClick={() => setSelectedPage("/addUser")}
+            onClick={() => setSelectedPage("/addAnnouncement")}
           >
-            Add User
+            Add Announcement
           </Button>
         </Box>
       )}
@@ -186,13 +161,13 @@ const UsersTable = ({ setSelectedPage }) => {
       />
 
       {/* Edit User Modal */}
-      {selectedUser && (
-        <EditUserModal
+      {selectedAnnouncement && (
+        <EditAnnouncementModal
           open={editModalOpen}
-          userId={userId}
-          refetchUsers={fetchUsers}
+          announcementId={announcementId}
+          refetchTaxes={fetchAnnouncements}
           onClose={() => setEditModalOpen(false)}
-          initialData={selectedUser}
+          initialData={selectedAnnouncement}
           onSubmit={() => {
             setEditModalOpen(false);
           }}
@@ -202,4 +177,4 @@ const UsersTable = ({ setSelectedPage }) => {
   );
 };
 
-export default UsersTable;
+export default AnnouncementTable;

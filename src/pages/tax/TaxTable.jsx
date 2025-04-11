@@ -7,11 +7,15 @@ import { FaPencilAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { deleteTax, getTaxes } from "../../../services/tax";
 import EditTaxModal from "./EditTaxModal";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
 
 const TaxTable = ({ setSelectedPage }) => {
   // Get User & Token
   const user = JSON.parse(localStorage.getItem("user"));
   const token = JSON.parse(localStorage.getItem("token"));
+
+  const dispatch = useDispatch();
 
   // State Variables
   const [taxId, setTaxId] = useState("");
@@ -103,9 +107,10 @@ const TaxTable = ({ setSelectedPage }) => {
             icon: "success",
             title: "Success",
             text: message,
-            timer: 1500,
+            timer: 800,
           });
           setRows(rows.filter((row) => row.id !== id));
+          dispatch(fetchAnalytics({ user, token }));
         }
       } catch (error) {
         console.error("Error deleting sale:", error);

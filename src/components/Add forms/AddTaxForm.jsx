@@ -4,11 +4,16 @@ import { ClipLoader } from "react-spinners";
 import { createExpanceCategory } from "../../../services/expense";
 import Swal from "sweetalert2";
 import { createTax } from "../../../services/tax";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../store/analyticsSlice";
 
 const AddTaxForm = ({ setSelectedPage }) => {
   // Token
   const token = JSON.parse(localStorage.getItem("token"));
   const user = JSON.parse(localStorage.getItem("user"));
+
+  // Dispatch
+  const dispatch = useDispatch();
 
   // State Variables
   const [loading, setLoading] = useState(false);
@@ -43,6 +48,7 @@ const AddTaxForm = ({ setSelectedPage }) => {
           timer: 800,
         });
         setLoading(false);
+        dispatch(fetchAnalytics({ user, token }));
         setTimeout(() => {
           setSelectedPage("/tax");
         }, 1200);
