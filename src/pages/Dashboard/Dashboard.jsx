@@ -212,7 +212,7 @@ export default function Dashboard() {
   }, [dispatch, location.pathname]);
 
 
-  console.log("net profit", netProfit)
+  console.log("net profit", netProfit);
   
   const router = useDemoRouter("/dashboard");
   const [selectedPage, setSelectedPage] = React.useState("dashboard");
