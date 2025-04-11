@@ -71,11 +71,22 @@ const ProfitLossChart = () => {
 
   // Monthly Profit Calculation with Tax
   const getMonthlyData = () => {
+<<<<<<< HEAD
+=======
+    const selectedYearTax = tax?.data?.yearlyAverageTax?.find(
+      (t) => parseInt(t.year) === parseInt(selectedYear)
+    );
+    const taxPercent = selectedYearTax
+      ? parseFloat(selectedYearTax.averageTax.replace("%", ""))
+      : 0;
+
+>>>>>>> 4ec815a (Add Tax Deduction)
     return monthlySalesData.map((item, index) => {
       const salary = monthlySalaryData[index]?.totalSalaries || 0;
       const expense = monthlyExpenseData[index]?.totalExpenses || 0;
       const totalExpense = salary + expense;
       const profit = item.totalSales - totalExpense;
+<<<<<<< HEAD
   
       // 🔥 Get correct monthly tax percentage
       const taxInfo = tax?.data?.currentYear?.monthlyBreakdown.find(
@@ -89,6 +100,11 @@ const ProfitLossChart = () => {
       const taxAmount = profit * (taxPercent / 100);
       const netProfit = profit - taxAmount;
   
+=======
+      const taxAmount = profit * (taxPercent / 100);
+      const netProfit = profit - taxAmount;
+
+>>>>>>> 4ec815a (Add Tax Deduction)
       return {
         name: item.month,
         revenue: item.totalSales,
@@ -211,7 +227,11 @@ const ProfitLossChart = () => {
             <Legend />
             <Bar dataKey="revenue" fill="#C96FFE" radius={[8, 8, 0, 0]} />
             <Bar dataKey="expense" fill="#4FA0FF" radius={[8, 8, 0, 0]} />
+<<<<<<< HEAD
             <Bar dataKey="tax" fill="#ff0000" radius={[8, 8, 0, 0]} />
+=======
+            <Bar dataKey="tax" fill="#4FA0FF" radius={[8, 8, 0, 0]} />
+>>>>>>> 4ec815a (Add Tax Deduction)
             <Bar dataKey="taxPercent" fill="#F59E0B" radius={[8, 8, 0, 0]} />
             <Line
               type="monotone"
