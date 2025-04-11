@@ -11,11 +11,9 @@ const ExpenseForm = ({ onSubmit, setSelectedPage }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
     amount: "",
     date: "",
     category: "",
-    year: "2025",
     admin: user?._id,
   });
   const [expenseCategories, setExpenseCategories] = useState([]);
@@ -88,19 +86,6 @@ const ExpenseForm = ({ onSubmit, setSelectedPage }) => {
         </div>
         <div className="mb-4 w-full">
           <TextField
-            label="Description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-        </div>
-      </div>
-
-      <div className="sm:flex sm:gap-4">
-        <div className="mb-4 w-full">
-          <TextField
             label="Amount In Rs"
             name="amount"
             type="number"
@@ -110,6 +95,9 @@ const ExpenseForm = ({ onSubmit, setSelectedPage }) => {
             required
           />
         </div>
+      </div>
+
+      <div className="sm:flex sm:gap-4">
         <div className="mb-4 w-full">
           <TextField
             select
@@ -128,27 +116,14 @@ const ExpenseForm = ({ onSubmit, setSelectedPage }) => {
             ))}
           </TextField>
         </div>
-      </div>
-      <div className="sm:flex sm:gap-4">
-        <div className="sm:w-1/2 w-full mb-4">
+
+        <div className="mb-4 w-full">
           <TextField
             label="Date"
             name="date"
             type="date"
             InputLabelProps={{ shrink: true }}
             value={formData.date}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-        </div>
-        <div className="sm:w-1/2 w-full mb-4">
-          <TextField
-            label="Year"
-            name="year"
-            type="number"
-            defaultValue={2025}
-            InputLabelProps={{ shrink: true }}
             onChange={handleChange}
             fullWidth
             required

@@ -100,7 +100,7 @@ const AddAnnouncementForm = ({ setSelectedPage }) => {
           color="primary"
           disabled={loading}
         >
-          {loading ? <ClipLoader size={28} color="#fff" /> : "Add Tax"}
+          {loading ? <ClipLoader size={28} color="#fff" /> : "Add Announcement"}
         </Button>
       </Box>
     </Box>

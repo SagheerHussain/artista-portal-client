@@ -50,11 +50,9 @@ const EditExpenseModal = ({ open, onClose, initialData, refetchSales }) => {
     try {
       const formData = {
         title: expenseData.title,
-        description: expenseData.description,
         amount: expenseData.amount,
         category: expenseData.category._id,
         date: expenseData.date,
-        year: expenseData.year
       };
       const { success, message } = await updateExpense(expenseData._id, formData, token);
       if (success) {
@@ -92,16 +90,6 @@ const EditExpenseModal = ({ open, onClose, initialData, refetchSales }) => {
           onChange={handleChange}
         />
         <TextField
-          label="Description"
-          name="description"
-          fullWidth
-          margin="dense"
-          multiline
-          rows={3}
-          value={expenseData.description || ""}
-          onChange={handleChange}
-        />
-        <TextField
           label="Amount In Rs"
           name="amount"
           type="number"
@@ -134,15 +122,6 @@ const EditExpenseModal = ({ open, onClose, initialData, refetchSales }) => {
           value={expenseData.date.split("T")[0] || ""}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
-        />
-        <TextField
-          label="Year"
-          name="year"
-          type="number"
-          fullWidth
-          margin="dense"
-          value={expenseData.year || ""}
-          onChange={handleChange}
         />
       </DialogContent>
       <DialogActions>

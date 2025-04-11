@@ -62,7 +62,6 @@ const ExpenseTable = ({ setSelectedPage }) => {
       id: item._id,
       No: index + 1,
       title: item.title,
-      description: item.description,
       amount: item.amount,
       month: item.month,
       year: item.year,
@@ -146,7 +145,6 @@ const ExpenseTable = ({ setSelectedPage }) => {
   const columns = [
     { field: "No", headerName: "Index", flex: 1, minWidth: 150 },
     { field: "title", headerName: "Title", flex: 1, minWidth: 150 },
-    { field: "description", headerName: "Description", flex: 1, minWidth: 150 },
     {
       field: "amount",
       headerName: "Amount",
@@ -250,7 +248,7 @@ const ExpenseTable = ({ setSelectedPage }) => {
               label="Year"
               onChange={(e) => handleFilterChange("year", e.target.value)}
             >
-              {[2025, 2024, 2023, 2022, 2021, 2020].map((year) => (
+              {[2025].map((year) => (
                 <MenuItem key={year} value={year}>
                   {year}
                 </MenuItem>

@@ -201,9 +201,9 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           timer: 800,
         });
         onClose();
+        dispatch(fetchAnalytics({ user, token }));
         refetchSales();
         setLoading(false);
-        dispatch(fetchAnalytics({ user, token }));
       } else {
         Swal.fire({
           icon: "error",
@@ -212,6 +212,7 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
           timer: 1200,
         });
         setLoading(false);
+        dispatch(fetchAnalytics({ user, token }));
       }
     } catch (error) {
       console.error("Error updating sale:", error);

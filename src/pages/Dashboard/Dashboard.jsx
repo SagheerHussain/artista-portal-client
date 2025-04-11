@@ -198,8 +198,6 @@ export default function Dashboard() {
   // Get Token From Storage
   const token = JSON.parse(localStorage.getItem("token"));
 
-  const location = useLocation();
-
   // dispatch
   const dispatch = useDispatch();
 
@@ -213,13 +211,14 @@ export default function Dashboard() {
     netProfit,
   } = useSelector((state) => state.analytics);
 
-  useEffect(() => {
-    dispatch(fetchAnalytics({ user, token }));
-  }, [dispatch, location.pathname]);
-
+  
   const router = useDemoRouter("/dashboard");
   const [selectedPage, setSelectedPage] = React.useState("dashboard");
   const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+    dispatch(fetchAnalytics({ user, token }));
+  }, [dispatch, selectedPage]);
 
   React.useEffect(() => {
     setSelectedPage(router.pathname);
@@ -303,7 +302,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* Announcements */}
-                  <div className={`bg-[#674fb8] flex items-center ${announcements.length > 0 ? "py-1" : "py-0"}`}>
+                  <div className={`bg-[#674fb8] flex items-center ${announcements.length > 0 ? "py-1" : "py-0"} [mask-image:linear-gradient(to_right,transparent,black_7%,black_90%,transparent)]`}>
                     <marquee
                       behavior=""
                       direction=""
