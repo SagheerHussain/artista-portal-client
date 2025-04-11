@@ -198,17 +198,27 @@ export default function Dashboard() {
   // Get Token From Storage
   const token = JSON.parse(localStorage.getItem("token"));
 
-  const location = useLocation();
-
   // dispatch
   const dispatch = useDispatch();
 
   // Analytics
-  const { totalRevenue, totalRecievedAmount, pendingAmount, clients, tax, netProfit } =
-    useSelector((state) => state.analytics);
+  const {
+    totalRevenue,
+    totalRecievedAmount,
+    pendingAmount,
+    clients,
+    tax,
+    netProfit,
+  } = useSelector((state) => state.analytics);
+
+  
+  const router = useDemoRouter("/dashboard");
+  const [selectedPage, setSelectedPage] = React.useState("dashboard");
+  const [announcements, setAnnouncements] = useState([]);
 
   useEffect(() => {
     dispatch(fetchAnalytics({ user, token }));
+<<<<<<< HEAD
   }, [dispatch, location.pathname]);
 
   
@@ -218,12 +228,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     dispatch(fetchAnalytics({ user, token }));
+=======
+>>>>>>> 4ca0f68 (Frontend Bugs Fixing)
   }, [dispatch, selectedPage]);
 
   React.useEffect(() => {
     setSelectedPage(router.pathname);
   }, [router.pathname]);
 
+<<<<<<< HEAD
+=======
+  const totalExpenses =
+    netProfit?.data?.totalExpenses?.USD + netProfit?.data?.totalSalaries?.USD;
+
+>>>>>>> 4ca0f68 (Frontend Bugs Fixing)
   // Get Active Announcement
   useEffect(() => {
     async function fetchActiveAnncouncements() {
@@ -686,7 +704,9 @@ export default function Dashboard() {
                               <h6 className="2xl:text-base text-[.8rem]">
                                 Tax Deduction
                               </h6>
-                              <h5 className="text-lg">{tax?.data?.overall?.averageTax}</h5>
+                              <h5 className="text-lg">
+                                {tax?.data?.overall?.averageTax || 0}
+                              </h5>
                             </CardContent>
                           </DashboardCard>
                         </Grid>

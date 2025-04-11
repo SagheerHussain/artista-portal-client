@@ -71,6 +71,7 @@ const ProfitLossChart = () => {
 
   // Monthly Profit Calculation with Tax
   const getMonthlyData = () => {
+<<<<<<< HEAD
     const selectedYearTax = tax?.data?.yearlyAverageTax?.find(
       (t) => parseInt(t.year) === parseInt(selectedYear)
     );
@@ -79,6 +80,9 @@ const ProfitLossChart = () => {
       : 0;
 
     return monthlySalesData.map((item, index) => {  
+=======
+    return monthlySalesData.map((item, index) => {
+>>>>>>> 4ca0f68 (Frontend Bugs Fixing)
       const salary = monthlySalaryData[index]?.totalSalaries || 0;
       const expense = monthlyExpenseData[index]?.totalExpenses || 0;
       const totalExpense = salary + expense;
@@ -95,7 +99,7 @@ const ProfitLossChart = () => {
   
       const taxAmount = profit * (taxPercent / 100);
       const netProfit = profit - taxAmount;
-
+  
       return {
         name: item.month,
         revenue: item.totalSales,

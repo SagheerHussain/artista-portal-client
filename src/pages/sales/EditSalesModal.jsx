@@ -204,7 +204,6 @@ const EditSalesModal = ({ open, saleId, onClose, onSubmit, refetchSales }) => {
         dispatch(fetchAnalytics({ user, token }));
         refetchSales();
         setLoading(false);
-        dispatch(fetchAnalytics({ user, token }));
       } else {
         Swal.fire({
           icon: "error",
