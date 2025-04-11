@@ -30,10 +30,6 @@ export const fetchAnalytics = createAsyncThunk(
 
     console.log("Tax", tax)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 4ca0f68 (Frontend Bugs Fixing)
     return {
       totalRevenue: revenue.totalAmount,
       totalRecievedAmount: recievedAmount.totalReceivedAmount,
