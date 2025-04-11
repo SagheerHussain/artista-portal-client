@@ -210,6 +210,9 @@ export default function Dashboard() {
   useEffect(() => {
     dispatch(fetchAnalytics({ user, token }));
   }, [dispatch, location.pathname]);
+
+
+  console.log("net profit", netProfit)
   
   const router = useDemoRouter("/dashboard");
   const [selectedPage, setSelectedPage] = React.useState("dashboard");
