@@ -106,7 +106,7 @@ const ProfitLossChart = () => {
       const salary = yearlySalaryData[index]?.totalSalaries || 0;
       const expense = yearlyExpenseData[index]?.totalExpenses || 0;
       const totalExpense = salary + expense;
-      const profit = item.totalSales - totalExpense;
+      const profit = item.totalReceived - totalExpense;
 
       const yearTax = tax?.data?.yearlyAverageTax?.find(
         (t) => parseInt(t.year) === parseInt(item.year)
@@ -120,7 +120,7 @@ const ProfitLossChart = () => {
 
       return {
         name: item.year.toString(),
-        revenue: item.totalSales,
+        revenue: item.totalReceived,
         expense: totalExpense,
         profit: netProfit,
         tax: taxAmount,
