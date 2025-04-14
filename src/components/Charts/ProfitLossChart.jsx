@@ -120,7 +120,7 @@ const ProfitLossChart = () => {
 
       return {
         name: item.year.toString(),
-        revenue: item.totalReceived,
+        recieved: item.totalReceived,
         expense: totalExpense,
         profit: netProfit,
         tax: taxAmount,
@@ -209,7 +209,7 @@ const ProfitLossChart = () => {
               cursor={{ fill: "#212121" }}
             />
             <Legend />
-            <Bar dataKey="revenue" fill="#C96FFE" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="recieved" fill="#C96FFE" radius={[8, 8, 0, 0]} />
             <Bar dataKey="expense" fill="#4FA0FF" radius={[8, 8, 0, 0]} />
             <Bar dataKey="tax" fill="#ff0000" radius={[8, 8, 0, 0]} />
             <Bar dataKey="taxPercent" fill="#F59E0B" radius={[8, 8, 0, 0]} />

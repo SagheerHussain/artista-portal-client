@@ -47,6 +47,7 @@ import { fetchAnalytics } from "../../store/analyticsSlice";
 import AnnouncementTable from "../announcements/AnnouncementTable";
 import AddAnnouncementForm from "../../components/Add forms/AddAnnouncementForm";
 import { getActiveAnnouncements } from "../../../services/announcement";
+import HeaderWithUser from "./HeaderWithUser";
 
 const darkTheme = createTheme({
   palette: {
