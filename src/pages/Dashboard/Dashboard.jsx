@@ -616,7 +616,7 @@ export default function Dashboard() {
                           </IconButton>
                           <CardContent>
                             <h6 className="2xl:text-base text-[.8rem]">
-                              Total Revenue
+                              Expected Amount
                             </h6>
                             <h5 className="text-lg">${totalRevenue}</h5>
                           </CardContent>
@@ -655,7 +655,7 @@ export default function Dashboard() {
                         </IconButton>
                         <CardContent>
                           <h6 className="2xl:text-base text-[.8rem]">
-                            Received Amount
+                            Revenue / Received 
                           </h6>
                           <h5 className="text-lg">${totalRecievedAmount}</h5>
                         </CardContent>
