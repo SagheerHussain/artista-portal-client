@@ -4,7 +4,7 @@ import { loginAccount } from "../../../services/authService";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import logoSrc from "/Images/logo.png";
-import authImage from "/Images/auth-illustration.png";
+import authImage from "/Images/auth-illustration.jpg";
 import { ClipLoader } from "react-spinners";
 import { FaEye } from "react-icons/fa";
 
