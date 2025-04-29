@@ -66,36 +66,36 @@ const LoginPage = () => {
   return (
     <div
       className="auth_layout flex justify-between items-center"
-      style={{ backgroundColor: "#070a13", minHeight: "100vh" }}
+      style={{ backgroundColor: "#AB7CFE", minHeight: "100vh" }}
     >
       {/* Left: Auth Form */}
       <div className="auth_children p-8 lg:w-[65vw]  xl:w-1/2 flex justify-center">
         <div
-          className="auth_form p-10 flex flex-col items-center justify-center min-h-full lg:w-3/4"
-          style={{ backgroundColor: "#12141d" }}
+          className="auth_form p-10 flex flex-col items-center rounded-2xl justify-center min-h-full lg:w-3/4"
+          style={{ backgroundColor: "#fff" }}
         >
-          <div className="mb-6">
+          {/* <div className="mb-6">
             <img
               src={logoSrc}
               alt="Artista Digitals"
               className="max-w-[200px]"
             />
-          </div>
+          </div> */}
           <form onSubmit={handleLogin} className="auth_user_form w-full">
-            <label htmlFor="" className="text-white text-sm pb-3">
+            <label htmlFor="" className="text-[#061C34] text-sm pb-3">
               Email*
             </label>
             <input
               type="email"
               name="email"
               onChange={handleChange}
-              placeholder="Email"
-              className="w-full px-4 py-2 mb-4 border-none text-white focus:outline-none rouned-[25x]"
-              style={{ backgroundColor: "#232839", borderRadius: "3px" }}
+              placeholder="sagheer@artistadigitals.com"
+              className="w-full px-4 py-2 mb-4 border-none text-[#AC7CFE] focus:outline-none rouned-[25x]"
+              style={{ backgroundColor: "#fff", borderRadius: "3px" }}
             />
 
             <div className="password w-full">
-              <label htmlFor="" className="text-white text-sm mb-3">
+              <label htmlFor="" className="text-[#061C34] text-sm mb-3">
                 Password*
               </label>
               <div className="relative">
@@ -103,18 +103,18 @@ const LoginPage = () => {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   onChange={handleChange}
-                  placeholder="Password"
-                  className="w-full px-4 py-2 mb-4 border-none text-white focus:outline-none rouned-[15px]"
-                  style={{ backgroundColor: "#232839", borderRadius: "3px" }}
+                  placeholder="********"
+                  className="w-full px-4 py-2 mb-4 border-none text-[#AC7CFE] focus:outline-none rouned-[15px]"
+                  style={{ backgroundColor: "#fff", borderRadius: "3px" }}
                 />
                 <FaEye
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-white absolute top-1/2 right-1 -translate-y-full hover:text-[#eee] cursor-pointer -translate-x-1/2"
+                  className="text-[#AC7CFE] absolute top-1/2 right-1 -translate-y-full hover:text-[#eee] cursor-pointer -translate-x-1/2"
                 />
               </div>
             </div>
 
-            <button className="bg-[#878aff] hover:bg-[#767bfc] text-white px-8 py-1 text-lg rounded hover:text-white rouned-[15px] w-full font-semibold">
+            <button className="bg-[#AB7CFE] hover:bg-[#061C34] text-white px-8 py-1 text-lg rounded-2xl hover:text-white rouned-[15px] w-full">
               {loading ? (
                 <ClipLoader color="#fff" size={22} />
               ) : (
@@ -137,7 +137,7 @@ const LoginPage = () => {
             <div className="mt-4">
               <Link
                 to={`/resend-email`}
-                className="text-zinc-300 hover:text-zinc-400 underline"
+                className="text-[#061C34] hover:text-zinc-400 underline"
               >
                 Forget Password?
               </Link>
@@ -147,13 +147,21 @@ const LoginPage = () => {
       </div>
 
       {/* Right: Image Section */}
-      <div className="auth_image fixed top-0 right-0 lg:w-[35vw] xl:w-1/2 h-screen">
+      <div className="auth_image fixed top-0 right-0 lg:w-[35vw] xl:w-1/2 h-screen relative">
+        {/* Background Image */}
         <img
           src={authImage}
           alt="Auth Illustration"
-          className="w-full"
-          style={{ height: "100vh" }}
+          className="w-full h-full object-cover"
         />
+        <a
+          href="https://www.artistadigitals.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-16 right-10 bg-[#AB7CFE] hover:bg-[#061C34] text-white px-6 py-2 text-lg rounded-2xl shadow-md"
+        >
+          Visit Website
+        </a>
       </div>
     </div>
   );
