@@ -92,7 +92,9 @@ const ProfitLossChart = () => {
       return {
         name: item.month,
         recieved: item.totalReceived,
-        expense: totalExpense,
+        expense,
+        salary,
+        totalExpense,
         profit: netProfit,
         tax: taxAmount,
         taxPercent: taxPercent,
@@ -106,7 +108,7 @@ const ProfitLossChart = () => {
       const salary = yearlySalaryData[index]?.totalSalaries || 0;
       const expense = yearlyExpenseData[index]?.totalExpenses || 0;
       const totalExpense = salary + expense;
-      const profit = item.totalReceived - totalExpense;
+      const profit = item.totalReceived - salary - expense;
 
       const yearTax = tax?.data?.yearlyAverageTax?.find(
         (t) => parseInt(t.year) === parseInt(item.year)
@@ -121,7 +123,9 @@ const ProfitLossChart = () => {
       return {
         name: item.year.toString(),
         recieved: item.totalReceived,
-        expense: totalExpense,
+        expense,
+        salary,
+        totalExpense,
         profit: netProfit,
         tax: taxAmount,
         taxPercent: averageTaxPercent,
@@ -211,6 +215,8 @@ const ProfitLossChart = () => {
             <Legend />
             <Bar dataKey="recieved" fill="#C96FFE" radius={[8, 8, 0, 0]} />
             <Bar dataKey="expense" fill="#4FA0FF" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="salary" fill="#4FA000" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="totalExpense" fill="#4FA099" radius={[8, 8, 0, 0]} />
             <Bar dataKey="tax" fill="#ff0000" radius={[8, 8, 0, 0]} />
             <Bar dataKey="taxPercent" fill="#F59E0B" radius={[8, 8, 0, 0]} />
             <Line
