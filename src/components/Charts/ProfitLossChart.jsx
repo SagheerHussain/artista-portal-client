@@ -76,19 +76,19 @@ const ProfitLossChart = () => {
       const expense = monthlyExpenseData[index]?.totalExpenses || 0;
       const totalExpense = salary + expense;
       const profit = item.totalReceived - totalExpense;
-  
+
       // 🔥 Get correct monthly tax percentage
       const taxInfo = tax?.data?.currentYear?.monthlyBreakdown.find(
         (t) => t.month === item.month
       );
-  
+
       const taxPercent = taxInfo
         ? parseFloat(taxInfo.totalPercentage.replace("%", ""))
         : 0;
-  
+
       const taxAmount = profit * (taxPercent / 100);
       const netProfit = profit - taxAmount;
-  
+
       return {
         name: item.month,
         recieved: item.totalReceived,
@@ -101,7 +101,6 @@ const ProfitLossChart = () => {
       };
     });
   };
-
   // Yearly Profit Calculation with Year-Specific Tax
   const getYearlyData = () => {
     return yearlySalesData.map((item, index) => {
@@ -132,6 +131,16 @@ const ProfitLossChart = () => {
       };
     });
   };
+  // Added By Sagheer
+  const currentMonthName = new Date().toLocaleString("default", {
+    month: "long",
+  });
+  const currentYear = new Date().getFullYear().toString();
+
+  const currentData =
+    viewType === "Monthly View"
+      ? getMonthlyData().find((item) => item.name === currentMonthName)
+      : getYearlyData().find((item) => item.name === currentYear);
 
   return (
     <div className="w-full rounded-xl shadow-lg">
@@ -195,7 +204,7 @@ const ProfitLossChart = () => {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip
-               formatter={(value, name, props) => {
+              formatter={(value, name, props) => {
                 if (name === "taxPercent") {
                   return [`${value.toFixed(2)}%`, name];
                 } else {
@@ -212,13 +221,12 @@ const ProfitLossChart = () => {
               labelStyle={{ color: "#C96FFE" }}
               cursor={{ fill: "#212121" }}
             />
-            <Legend />
             <Bar dataKey="recieved" fill="#C96FFE" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="expense" fill="#4FA0FF" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="salary" fill="#4FA000" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="totalExpense" fill="#4FA099" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="tax" fill="#ff0000" radius={[8, 8, 0, 0]} />
-            <Bar dataKey="taxPercent" fill="#F59E0B" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="expense" fill="#ef9b20" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="salary" fill="#00bfa0" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="totalExpense" fill="#b30000" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="tax" fill="#fd7f6f" radius={[8, 8, 0, 0]} />
+            <Bar dataKey="taxPercent" fill="#fd7f6f" radius={[8, 8, 0, 0]} />
             <Line
               type="monotone"
               dataKey="profit"
@@ -229,9 +237,35 @@ const ProfitLossChart = () => {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
+      {/* Added By Sagheer */}
+      <div className="mt-4 text-sm text-gray-500 flex flex-wrap gap-4 justify-between">
+        {[
+          { label: "Received", color: "#C96FFE", value: currentData?.recieved },
+          { label: "Expense", color: "#ef9b20", value: currentData?.expense },
+          { label: "Salary", color: "#00bfa0", value: currentData?.salary },
+          {
+            label: "Total Expense",
+            color: "#b30000",
+            value: currentData?.totalExpense,
+          },
+          { label: "Tax", color: "#fd7f6f", value: currentData?.tax },
+          { label: "Profit", color: "#108900", value: currentData?.profit },
+        ].map((item, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-2 min-w-[45%] sm:min-w-[30%] md:min-w-[18%]"
+          >
+            <div
+              className="w-4 h-4 rounded-full"
+              style={{ backgroundColor: item.color }}
+            ></div>
+            <span>{item.label}</span>
+            <span>{Math.round(item.value || 0).toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
 export default ProfitLossChart;
-
