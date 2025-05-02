@@ -186,11 +186,7 @@ const MultiBarChart = () => {
               cursor={{ fill: "#212121" }}
             />
             <Legend />
-            <Bar
-              dataKey="value"
-              fill={"#C96FFE"}
-              radius={[8, 8, 0, 0]}
-            />
+            <Bar dataKey="value" fill={"#C96FFE"} radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -199,4 +195,3 @@ const MultiBarChart = () => {
 };
 
 export default MultiBarChart;
-
