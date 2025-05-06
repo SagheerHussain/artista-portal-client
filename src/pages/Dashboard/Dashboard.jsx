@@ -704,7 +704,7 @@ export default function Dashboard() {
                     {user?.role === "admin" && (
                       <Grid item xs={6} sm={6} lg={3}>
                         <DashboardCard>
-                          <IconButton color="primary">
+                          <IconButton sx={{ color: "cyan" }}>
                             <MonetizationOn fontSize="large" />
                           </IconButton>
                           <CardContent>
@@ -724,7 +724,7 @@ export default function Dashboard() {
                       lg={user?.role === "admin" ? 3 : 4}
                     >
                       <DashboardCard>
-                        <IconButton color="primary">
+                        <IconButton sx={{ color: "yellow" }}>
                           <MonetizationOn fontSize="large" />
                         </IconButton>
                         <CardContent>
@@ -743,7 +743,7 @@ export default function Dashboard() {
                       lg={user?.role === "admin" ? 3 : 4}
                     >
                       <DashboardCard>
-                        <IconButton color="secondary">
+                        <IconButton sx={{ color: "#1de560" }}>
                           <MonetizationOn fontSize="large" />
                         </IconButton>
                         <CardContent>
@@ -776,7 +776,7 @@ export default function Dashboard() {
                       <>
                         <Grid item xs={6} sm={6} lg={3}>
                           <DashboardCard>
-                            <IconButton color="secondary">
+                            <IconButton sx={{ color: "#fd7f6f" }}>
                               <AssuredWorkloadIcon fontSize="large" />
                             </IconButton>
                             <CardContent>
@@ -792,7 +792,7 @@ export default function Dashboard() {
 
                         <Grid item xs={6} sm={6} lg={3}>
                           <DashboardCard>
-                            <IconButton color="secondary">
+                            <IconButton sx={{ color: "red" }}>
                               <MonetizationOn fontSize="large" />
                             </IconButton>
                             <CardContent>
@@ -806,7 +806,7 @@ export default function Dashboard() {
 
                         <Grid item xs={6} sm={6} lg={3}>
                           <DashboardCard>
-                            <IconButton color="secondary">
+                            <IconButton sx={{ color: "#108900" }}>
                               <MonetizationOn fontSize="large" />
                             </IconButton>
                             <CardContent>

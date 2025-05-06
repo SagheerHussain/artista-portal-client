@@ -70,14 +70,14 @@ const MultiBarChart = () => {
       setMonthlySalesData(
         monthlySales.data.map((item) => ({
           name: item.month,
-          value: item.totalSales,
+          value: item.totalReceived,
         }))
       );
 
       setYearlySalesData(
         yearlySales.data.map((item) => ({
           name: item.year,
-          value: item.totalSales,
+          value: item.totalReceived,
         }))
       );
 

@@ -77,6 +77,8 @@ const ProfitLossChart = () => {
       const totalExpense = salary + expense;
       const profit = item.totalReceived - totalExpense;
 
+      console.log("Profit", item.totalReceived);
+
       // 🔥 Get correct monthly tax percentage
       const taxInfo = tax?.data?.currentYear?.monthlyBreakdown.find(
         (t) => t.month === item.month
@@ -86,7 +88,7 @@ const ProfitLossChart = () => {
         ? parseFloat(taxInfo.totalPercentage.replace("%", ""))
         : 0;
 
-      const taxAmount = profit * (taxPercent / 100);
+      const taxAmount = item.totalReceived * (taxPercent / 100);
       const netProfit = profit - taxAmount;
 
       return {
@@ -116,7 +118,7 @@ const ProfitLossChart = () => {
         ? parseFloat(yearTax.averageTax.replace("%", ""))
         : 0;
 
-      const taxAmount = profit * (averageTaxPercent / 100);
+      const taxAmount = item.totalReceived * (averageTaxPercent / 100);
       const netProfit = profit - taxAmount;
 
       return {
