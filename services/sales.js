@@ -141,3 +141,14 @@ export const getPaymentMethods = async (token) => {
   );
   return response.data;
 };
+
+// Get Total Amounts
+export const getTotalAmounts = async (token) => {
+  const response = await axios.get(
+    `${import.meta.env.VITE_BASE_URL}/api/sales/total-amounts`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return response.data;
+};

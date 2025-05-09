@@ -13,7 +13,12 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditSalaryModal from "./EditSalaryModal";
 import GridTable from "../../components/GridTable";
-import { deleteSalary, filterSalaries, getSalaries } from "../../../services/salary";
+import {
+  deleteSalary,
+  filterSalaries,
+  getSalaries,
+  getTotalSalaryAmounts,
+} from "../../../services/salary";
 import { getEmployees } from "../../../services/users";
 import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -21,6 +26,7 @@ import Swal from "sweetalert2";
 
 const SalariesTable = ({ setSelectedPage }) => {
   const token = JSON.parse(localStorage.getItem("token"));
+  const user = JSON.parse(localStorage.getItem("user"));
 
   // State Variables
   const [anchorEl, setAnchorEl] = useState(null);
@@ -36,6 +42,7 @@ const SalariesTable = ({ setSelectedPage }) => {
   const [employee, setEmployee] = useState("");
   const [year, setYear] = useState("");
   const [status, setStatus] = useState("");
+  const [totalAmount, setTotalAmount] = useState(0);
 
   // Fetch Employees Data
   const fetchEmployees = async () => {
@@ -261,134 +268,175 @@ const SalariesTable = ({ setSelectedPage }) => {
     handleFilter();
   }, [month, year, status, employee]);
 
+  // Fetch Salaries
+  const fetchSalariesAmountData = async () => {
+    try {
+      const { data } = await getTotalSalaryAmounts(token);
+      setTotalAmount(data);
+    } catch (error) {
+      console.error("Error fetching salaries:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSalariesAmountData();
+  }, []);
+
   return (
-    <Box sx={{ padding: 3, backgroundColor: "#121212", borderRadius: 2 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "end",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-        className="gap-4"
-      >
-        <Button
-          variant="outlined"
-          startIcon={<AddIcon />}
-          onClick={() => setSelectedPage("/addSalary")}
-        >
-          Add Salary
-        </Button>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => {
-            setMonth("");
-            setYear("");
-            setEmployee("");
-            setStatus("");
-            fetchSalaries(); // fetch original data
+    <>
+      <Box sx={{ padding: 3, backgroundColor: "#121212", borderRadius: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end",
+            alignItems: "center",
+            marginBottom: "20px",
           }}
+          className="gap-4"
         >
-          Reset Salaries
-        </Button>
+          <Button
+            variant="outlined"
+            startIcon={<AddIcon />}
+            onClick={() => setSelectedPage("/addSalary")}
+          >
+            Add Salary
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => {
+              setMonth("");
+              setYear("");
+              setEmployee("");
+              setStatus("");
+              fetchSalaries(); // fetch original data
+            }}
+          >
+            Reset Salaries
+          </Button>
+        </Box>
+
+        <div className="search_records grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <FormControl className="w-full">
+            <InputLabel id="demo-simple-select-label">Employee</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={employee}
+              label="Employee"
+              onChange={(e) => setEmployee(e.target.value)}
+            >
+              {employees?.map((employee) => (
+                <MenuItem key={employee._id} value={employee._id}>
+                  {employee.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Month</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Month"
+              onChange={(e) => setMonth(e.target.value)}
+            >
+              {[
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+              ].map((month) => (
+                <MenuItem key={month} value={month}>
+                  {month}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Year</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Year"
+              onChange={(e) => setYear(e.target.value)}
+            >
+              {[
+                2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016,
+                2015,
+              ].map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Status</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Status"
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              {["Paid", "Pending"].map((status) => (
+                <MenuItem key={status} value={status}>
+                  {status}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+
+        <GridTable
+          selectedRows={selectedRows}
+          rows={rows}
+          columns={columns}
+          setSelectedRows={setSelectedRows}
+        />
+
+        {/* Edit Salary Modal */}
+        <EditSalaryModal
+          open={editModalOpen}
+          onClose={handleModalClose}
+          selectedSalary={selectedSalary}
+          refetchSalaries={fetchSalaries}
+          selectedEmployee={selectedEmployee}
+        />
       </Box>
+      {user?.role === "admin" && (
+        <div className="mt-4 text-base text-gray-500 flex flex-wrap gap-4 justify-between">
+          {[
+            {
+              label: "Total Salary Amount",
+              color: "#C96FFE",
+              value: totalAmount?.totalAmount,
+            },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-2 min-w-[45%] sm:min-w-[30%] md:min-w-[18%]"
+            >
+              <div
+                className="w-4 h-4 rounded-full"
+                style={{ backgroundColor: item.color }}
+              ></div>
+              <span>{item.label}</span>
+              <span>$ {Math.round(item.value || 0).toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
-      <div className="search_records grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <FormControl className="w-full">
-          <InputLabel id="demo-simple-select-label">Employee</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={employee}
-            label="Employee"
-            onChange={(e) => setEmployee(e.target.value)}
-          >
-            {employees?.map((employee) => (
-              <MenuItem key={employee._id} value={employee._id}>
-                {employee.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Month</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Month"
-            onChange={(e) => setMonth(e.target.value)}
-          >
-            {[
-              "January",
-              "February",
-              "March",
-              "April",
-              "May",
-              "June",
-              "July",
-              "August",
-              "September",
-              "October",
-              "November",
-              "December",
-            ].map((month) => (
-              <MenuItem key={month} value={month}>
-                {month}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Year</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Year"
-            onChange={(e) => setYear(e.target.value)}
-          >
-            {[
-              2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015,
-            ].map((year) => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl fullWidth>
-          <InputLabel id="demo-simple-select-label">Status</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Status"
-            onChange={(e) => setStatus(e.target.value)}
-          >
-            {["Paid", "Pending"].map((status) => (
-              <MenuItem key={status} value={status}>
-                {status}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-
-      <GridTable
-        selectedRows={selectedRows}
-        rows={rows}
-        columns={columns}
-        setSelectedRows={setSelectedRows}
-      />
-
-      {/* Edit Salary Modal */}
-      <EditSalaryModal
-        open={editModalOpen}
-        onClose={handleModalClose}
-        selectedSalary={selectedSalary}
-        refetchSalaries={fetchSalaries}
-        selectedEmployee={selectedEmployee}
-      />
-    </Box>
+    </>
   );
 };
 

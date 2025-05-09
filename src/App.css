@@ -14,6 +14,10 @@ header .MuiTypography-root.MuiTypography-h6 {
   background: #222 !important;
 }
 
+section#table {
+  min-height: 100% !important;
+}
+
 @media (max-width: 1280px) {
   .auth_form {
     max-width: 500px !important;

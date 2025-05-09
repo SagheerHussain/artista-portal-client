@@ -35,6 +35,7 @@ const AddSalaryForm = ({ setSelectedPage }) => {
   const [employees, setEmployees] = useState([]);
   const [totalMonthlySales, setTotalMonthlySales] = useState(0);
   const [textDeduction, setTextDeduction] = useState(0);
+  const [dollarRate, setDollarRate] = useState(null);
 
   // Fetch Employees
   const fetchEmployees = async () => {
@@ -73,7 +74,7 @@ const AddSalaryForm = ({ setSelectedPage }) => {
     const deductionPercent = Number(textDeduction) || 0;
 
     const commissionInDollar = (totalMonthlySales * commissionPercent) / 100;
-    const commissionInPKR = commissionInDollar * (rates.PKR || 280);
+    const commissionInPKR = commissionInDollar * (dollarRate || 280);
 
     const deductionAmount = (commissionInPKR * deductionPercent) / 100;
     const finalCommission = commissionInPKR - deductionAmount;
@@ -88,7 +89,7 @@ const AddSalaryForm = ({ setSelectedPage }) => {
   // Handle Form Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    // setLoading(true);
     try {
       const { commission, totalSalary } = calculateTotalSalary();
 
@@ -134,144 +135,156 @@ const AddSalaryForm = ({ setSelectedPage }) => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#121212", p: 3, borderRadius: 2 }}>
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <FormControl className="w-full">
-              <InputLabel>Employee</InputLabel>
-              <Select
-                name="employee"
-                onChange={handleChangeEmployee}
-                label="Employee"
-              >
-                {employees?.map((employee) => (
-                  <MenuItem key={employee._id} value={employee._id}>
-                    {employee.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+    <>
+      <div className="flex items-center justify-end gap-2">
+        <div
+          className="w-4 h-4 rounded-full"
+          style={{ backgroundColor: "#C96FFE" }}
+        ></div>
+        <h1 className="text-base text-gray-300">
+          Dollar Rate: <span className="ps-2">${rates.PKR || 280}</span>
+        </h1>
+      </div>
 
-          {totalMonthlySales >= 0 && (
+      <Box sx={{ backgroundColor: "#121212", p: 3, borderRadius: 2 }}>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <FormControl className="w-full">
+                <InputLabel>Employee</InputLabel>
+                <Select
+                  name="employee"
+                  onChange={handleChangeEmployee}
+                  label="Employee"
+                >
+                  {employees?.map((employee) => (
+                    <MenuItem key={employee._id} value={employee._id}>
+                      {employee.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {totalMonthlySales >= 0 && (
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  label="Total Monthly Sales in $"
+                  type="number"
+                  value={totalMonthlySales}
+                  disabled
+                  sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+                />
+              </Grid>
+            )}
+
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                label="Total Monthly Sales in $"
+                label="Commission in % e.g. 20%"
                 type="number"
-                value={totalMonthlySales}
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                required
+                sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Enter Dollar Rate"
+                name="dollarRate"
+                type="number"
+                value={dollarRate}
+                onChange={(e) => setDollarRate(e.target.value)}
+                sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Bonus in PKR (optional)"
+                name="bonus"
+                type="number"
+                value={formData.bonus}
+                onChange={handleChange}
+                sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Total Amount in PKR"
+                name="totalAmount"
+                type="number"
+                value={calculateTotalSalary().totalSalary.toLocaleString()}
                 disabled
                 sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
               />
             </Grid>
-          )}
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Commission in % e.g. 20%"
-              type="number"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              required
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
-            />
+            <Grid item xs={12} md={6}>
+              <TextField
+                select
+                fullWidth
+                label="Status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                required
+                sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+              >
+                {["Paid", "Pending"].map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Paid Date"
+                name="paidDate"
+                type="date"
+                value={formData.paidDate}
+                onChange={handleChange}
+                required
+                InputLabelProps={{ shrink: true }}
+                sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+              />
+            </Grid>
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Current Dollar Rate"
-              name="dollarRate"
-              type="number"
-              value={rates.PKR || 280}
-              disabled
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Bonus in PKR (optional)"
-              name="bonus"
-              type="number"
-              value={formData.bonus}
-              onChange={handleChange}
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Total Amount in PKR"
-              name="totalAmount"
-              type="number"
-              value={calculateTotalSalary().totalSalary.toLocaleString()}
-              disabled
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              select
-              fullWidth
-              label="Status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              required
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
+          <Box
+            mt={2}
+            sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}
+          >
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => setSelectedPage("/reports/salaries")}
             >
-              {["Paid", "Pending"].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Paid Date"
-              name="paidDate"
-              type="date"
-              value={formData.paidDate}
-              onChange={handleChange}
-              required
-              InputLabelProps={{ shrink: true }}
-              sx={{ backgroundColor: "#1e1e1e", borderRadius: 1 }}
-            />
-          </Grid>
-        </Grid>
-
-        <Box
-          mt={2}
-          sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}
-        >
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => setSelectedPage("/reports/salaries")}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? <ClipLoader size={20} color="#fff" /> : "Add Salary"}
-          </Button>
-        </Box>
-      </form>
-    </Box>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? <ClipLoader size={20} color="#fff" /> : "Add Salary"}
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </>
   );
 };
 

@@ -110,3 +110,20 @@ export const filterSalaries = async (token, month, year, status, employee) => {
     console.error("Error fetching filtered salaries:", error);
   }
 };
+
+// Total Salary Amounts
+export const getTotalSalaryAmounts = async (token) => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/salaries/total-salary-amounts`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching total salary amounts:", error);
+  }
+};
